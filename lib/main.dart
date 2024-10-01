@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               scaffoldBackgroundColor: Colors.white.withOpacity(.988),
             ),
+            debugShowCheckedModeBanner: false,
             home: const RegisterScreen(),
           ),
         ),
