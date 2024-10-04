@@ -70,4 +70,6 @@ class AuthCubit extends Cubit<AuthState> {
     log(change.toString());
     super.onChange(change);
   }
+
+  void updateAccount({required String name, required String email, required String password}) {}
 }

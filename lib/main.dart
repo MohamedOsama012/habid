@@ -4,8 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_track/feature/Auth/ui/screen/register_screen.dart';
+import 'package:habit_track/feature/Settings/screen/settting.dart';
 import 'package:habit_track/firebase_options.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +34,7 @@ class MyApp extends StatelessWidget {
               scaffoldBackgroundColor: Colors.white.withOpacity(.988),
             ),
             debugShowCheckedModeBanner: false,
-            home: const RegisterScreen(),
+            home: settingsScreen(),
           ),
         ),
       ),
