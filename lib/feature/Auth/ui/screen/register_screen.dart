@@ -7,14 +7,14 @@ import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
-import 'package:habit_track/feature/Auth/ui/screen/home_scre.dart';
 import 'package:habit_track/feature/Auth/ui/screen/login_screen.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_text.dart';
 import 'package:habit_track/feature/Auth/ui/widget/googal_button.dart';
 import 'package:habit_track/feature/Auth/ui/widget/password_field.dart';
+import 'package:habit_track/feature/home/ui/screen/home_screen.dart';
+import 'package:habit_track/feature/home/ui/screen/navbar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               context.loaderOverlay.hide();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Home()),
+                MaterialPageRoute(builder: (context) => const BottomNavBar()),
               );
             } else {
               context.loaderOverlay.show(

@@ -31,46 +31,53 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Instructions sent to $email")),
       );
+      // Delay for 5 seconds before navigating back
+      Future.delayed(const Duration(seconds: 3), () {
+        Navigator.pop(context); // Navigate back after the delay
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 120.h, horizontal: 20.w),
-        child: Form(
-          key: _formKey, // Form key for validation
-          child: Column(
-            children: [
-              Text(
-                "Enter your email below, we will send instructions to reset your password",
-                style: TextAppStyle.subTittel,
-              ),
-              AppScreenUtil.hight(30),
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                child: TextFormField(
-                  controller: _emailController,
-                  decoration: decorationField(),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 120.h, horizontal: 20.w),
+          child: Form(
+            key: _formKey, // Form key for validation
+            child: Column(
+              children: [
+                Text(
+                  "Enter your email below, we will send instructions to reset your password",
+                  style: TextAppStyle.subTittel,
                 ),
-              ),
-              AppScreenUtil.hight(30),
-              CustomButton(
-                buttonName: 'Submit',
-                onPressed: _handleSubmit,
-              ),
-            ],
+                AppScreenUtil.hight(30),
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: decorationField(),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                  ),
+                ),
+                AppScreenUtil.hight(30),
+                CustomButton(
+                  buttonName: 'Submit',
+                  onPressed: _handleSubmit,
+                ),
+              ],
+            ),
           ),
         ),
       ),

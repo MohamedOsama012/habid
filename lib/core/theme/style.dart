@@ -6,7 +6,15 @@ class TextAppStyle {
   static TextStyle mainTittel = TextStyle(
       fontSize: 45.sp,
       fontWeight: FontWeight.w900,
-      color: AppColor.tittelText,
+      foreground: Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.7
+        ..color = Colors.black,
+      fontFamily: "Nunito");
+  static TextStyle subMainTittel = TextStyle(
+      fontSize: 45.sp,
+      fontWeight: FontWeight.w900,
+      color: Colors.black,
       fontFamily: "Nunito");
   static TextStyle subTittel = TextStyle(
       fontSize: 14.sp,
