@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/style.dart';
 
-class CustomText extends StatelessWidget {
+class CustomTextWithHint extends StatelessWidget {
+  final String hintNameInside;
   final String hintName;
   final TextEditingController controller;
   final String? Function(String?)? validator;
 
-  const CustomText({
-    super.key,
+  const CustomTextWithHint({
+    Key? key,
+    this.hintNameInside = '',
     required this.hintName,
     required this.controller,
     required this.validator,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +30,31 @@ class CustomText extends StatelessWidget {
           color: Colors.white,
           child: TextFormField(
             controller: controller,
-            validator: validator,
-            decoration: decorationField(),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return null;
+              }
+              return validator?.call(value);
+            },
+            decoration: InputDecoration(
+              hintText: hintNameInside.isNotEmpty ? hintNameInside : null,
+              hintStyle: TextStyle(color: Colors.grey),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              border: borderTextField(),
+              enabledBorder: borderTextField(),
+              focusedBorder: borderTextField(),
+              errorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+              ),
+            ),
             autovalidateMode: AutovalidateMode.onUserInteraction,
           ),
         ),
       ],
     );
   }
-}
 
- OutlineInputBorder borderTextField() {
+  OutlineInputBorder borderTextField() {
     return const OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(4)),
       borderSide: BorderSide(
@@ -47,14 +63,4 @@ class CustomText extends StatelessWidget {
       ),
     );
   }
-    InputDecoration decorationField() {
-    return InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                    border: borderTextField(),
-                    enabledBorder: borderTextField(),
-                    focusedBorder: borderTextField(),
-                    errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red)));
-  }
-
+}
