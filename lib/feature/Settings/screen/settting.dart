@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_track/feature/Auth/ui/screen/login_screen.dart';
+import 'package:habit_track/feature/Auth/ui/screen/register_screen.dart';
+import 'package:habit_track/feature/Settings/screen/Policy.dart';
+import 'package:habit_track/feature/Settings/screen/TermsAndCondition.dart';
 import 'package:habit_track/feature/Settings/widget/SettingOption.dart';
 import 'package:habit_track/feature/Settings/screen/account.dart';
+import 'package:habit_track/feature/Settings/screen/About.dart';
+import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
 
+class SettingsScreen extends StatefulWidget {
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
 
-class settingsScreen extends StatelessWidget {
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _notificationsEnabled = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +25,7 @@ class settingsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(left: 10, top: 20),
           child: AppBar(
-            title: const Text("Setting" , style: TextStyle(fontSize: 30),),
+            title: const Text("Setting", style: TextStyle(fontSize: 30)),
             backgroundColor: Colors.white,
             elevation: 0,
             titleTextStyle: const TextStyle(
@@ -31,12 +44,11 @@ class settingsScreen extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.only(left: 10, top: 40, right: 20, bottom: 20),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: 'Hello, ',
                       style: TextStyle(
                         fontSize: 32,
@@ -71,18 +83,40 @@ class settingsScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  // Notifications
-                  buildSettingsOption(
-                    title: 'Notifications',
-                    onTap: () {
-                      // Navigate to notifications settings
-                    },
+                  // Notifications with a switch
+                  Stack(
+                    children: [
+                      buildSettingsOption(
+                        title: 'Notifications',
+                        onTap: () {
+                          // Handle any tap action if needed
+                        },
+                      ),
+                      Positioned(
+                        right: 10,
+                        top: 0,
+                        bottom: 0,
+                        child: Switch(
+                          value: _notificationsEnabled,
+                          onChanged: (bool newValue) {
+                            setState(() {
+                              _notificationsEnabled = newValue;
+                            });
+                          },
+                          activeColor: Colors.blue,
+                        ),
+                      ),
+                    ],
                   ),
                   // Terms and Conditions
                   buildSettingsOption(
                     title: 'Term and Condition',
                     onTap: () {
-                      // Navigate to terms and conditions
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TermsAndConditionsPage(),
+                        ),
+                      );
                     },
                   ),
                   // Policy
@@ -90,6 +124,11 @@ class settingsScreen extends StatelessWidget {
                     title: 'Policy',
                     onTap: () {
                       // Navigate to policy
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PrivacyPolicyPage(),
+                        ),
+                      );
                     },
                   ),
                   // About App
@@ -97,6 +136,11 @@ class settingsScreen extends StatelessWidget {
                     title: 'About App',
                     onTap: () {
                       // Navigate to about app
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AboutPage(),
+                        ),
+                      );
                     },
                   ),
                   // Logout
@@ -104,6 +148,12 @@ class settingsScreen extends StatelessWidget {
                     title: 'Logout',
                     titleColor: Colors.red,
                     onTap: () {
+                      context.read<AuthCubit>().logOut();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => RegisterScreen(),
+                        ),
+                      );
                       // Logout function
                     },
                   ),
@@ -115,6 +165,4 @@ class settingsScreen extends StatelessWidget {
       ),
     );
   }
-
-
 }
