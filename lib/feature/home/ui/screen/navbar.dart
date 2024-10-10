@@ -14,7 +14,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     with WidgetsBindingObserver {
   int curentIndex = 0;
   final screen = [
-    HomeScreen(), // Replace with HomeScreen()
+    const HomeScreen(), // Replace with HomeScreen()
     HabitCalendar(),
     TimerGoalScreen(),
     const Center(child: Text("setting")),

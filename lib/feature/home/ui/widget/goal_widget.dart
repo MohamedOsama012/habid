@@ -56,18 +56,17 @@ class GoalWidget extends StatelessWidget {
               //!2
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
-                  return cubit.goalList.isEmpty
-                      ? Text("not goal Yet")
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return GoalContaner(
-                              dateGoal: cubit.goalList[index],
-                              habitName: cubit.toDohabitList[index].name,
-                            );
-                          },
-                          itemCount: cubit.goalList.length,
-                        );
+                  log("ooooooooooooooooooooooooooooo");
+                  log(state.toString());
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return GoalContaner(
+                        dateGoal: cubit.goalList[index],
+                      );
+                    },
+                    itemCount: cubit.goalList.length,
+                  );
                 },
               ),
               //!3

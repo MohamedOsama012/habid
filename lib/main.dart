@@ -3,19 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_track/feature/timer/task.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/cubit/goal_cubit/cubit/goal_cubit.dart';
-import 'package:habit_track/feature/home/data/home_firebase_operation.dart';
 
 import 'package:habit_track/feature/home/ui/screen/navbar.dart';
 import 'package:habit_track/firebase_options.dart';
+import 'package:hive/hive.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+
+import 'package:hive_flutter/adapters.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await Hive.initFlutter();
+  Hive.registerAdapter(TaskAdapter());
+  await Hive.openBox('taskBox');
   runApp(const MyApp());
 }
 
