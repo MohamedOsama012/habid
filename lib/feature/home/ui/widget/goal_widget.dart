@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/style.dart';
+import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/add_habit_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/create_goal_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/goal_widgets/goal_continer.dart';
@@ -11,6 +15,8 @@ class GoalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var cubit = BlocProvider.of<HomeCubit>(context);
+    log("enter ti goal widget");
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 18),
       child: Container(
@@ -48,12 +54,21 @@ class GoalWidget extends StatelessWidget {
                 ],
               ),
               //!2
-              ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return const GoalContaner();
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return cubit.goalList.isEmpty
+                      ? Text("not goal Yet")
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return GoalContaner(
+                              dateGoal: cubit.goalList[index],
+                              habitName: cubit.toDohabitList[index].name,
+                            );
+                          },
+                          itemCount: cubit.goalList.length,
+                        );
                 },
-                itemCount: 2,
               ),
               //!3
               TextButton(
@@ -75,7 +90,7 @@ class GoalWidget extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CreatNewGoal();
+        return const CreateNewGoal();
       },
     );
   }
