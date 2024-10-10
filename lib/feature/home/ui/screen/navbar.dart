@@ -23,48 +23,50 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        child: BottomNavigationBar(
-          unselectedIconTheme: const IconThemeData(color: Colors.grey),
-          backgroundColor: Colors.white.withOpacity(.89),
-          type: BottomNavigationBarType.fixed,
-          items: [
-            BottomNavigationBarItem(
-              icon: _buildIconWithGradient(
-                icon: Icons.home_outlined,
-                isSelected: curentIndex == 0,
+    return SafeArea(
+      child: Scaffold(
+        bottomNavigationBar: Container(
+          color: Colors.white,
+          child: BottomNavigationBar(
+            unselectedIconTheme: const IconThemeData(color: Colors.grey),
+            backgroundColor: Colors.white.withOpacity(.89),
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                icon: _buildIconWithGradient(
+                  icon: Icons.home_outlined,
+                  isSelected: curentIndex == 0,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildIconWithGradient(
-                icon: Icons.calendar_month_rounded,
-                isSelected: curentIndex == 1,
+              BottomNavigationBarItem(
+                icon: _buildIconWithGradient(
+                  icon: Icons.calendar_month_rounded,
+                  isSelected: curentIndex == 1,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildIconWithGradient(
-                icon: Icons.timer,
-                isSelected: curentIndex == 2,
+              BottomNavigationBarItem(
+                icon: _buildIconWithGradient(
+                  icon: Icons.timer,
+                  isSelected: curentIndex == 2,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildIconWithGradient(
-                icon: Icons.settings,
-                isSelected: curentIndex == 3,
+              BottomNavigationBarItem(
+                icon: _buildIconWithGradient(
+                  icon: Icons.settings,
+                  isSelected: curentIndex == 3,
+                ),
+                label: '',
               ),
-              label: '',
-            ),
-          ],
-          currentIndex: curentIndex,
-          onTap: (value) => setState(() => curentIndex = value),
+            ],
+            currentIndex: curentIndex,
+            onTap: (value) => setState(() => curentIndex = value),
+          ),
         ),
+        body: screen[curentIndex],
       ),
-      body: screen[curentIndex],
     );
   }
 

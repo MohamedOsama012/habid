@@ -1,10 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_track/core/global/global_widget/app_stuts.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
+import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/compont_widget_fort_alert.dart';
+import 'package:habit_track/main.dart';
 
 class EditHabitDialog extends StatefulWidget {
-  EditHabitDialog({Key? key}) : super(key: key);
+  EditHabitDialog({Key? key, required this.habitDate}) : super(key: key);
+  HabitModel habitDate;
 
   @override
   State<EditHabitDialog> createState() => _EditHabitDialogState();
@@ -13,6 +21,23 @@ class EditHabitDialog extends StatefulWidget {
 class _EditHabitDialogState extends State<EditHabitDialog> {
   TextEditingController habitNameController = TextEditingController();
   String selectedHabitType = 'Everyday';
+  List<String> customDays = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Pre-fill with the existing habit name
+    habitNameController.text = widget.habitDate.name;
+
+    // Set initial habit type based on the habitDate
+    if (widget.habitDate.period == 'Custom') {
+      selectedHabitType = 'Custom';
+      customDays = widget.habitDate.customDays ?? [];
+    } else {
+      selectedHabitType = 'Everyday';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +63,10 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
               TextPartInAlert(
                 habitNameController: habitNameController,
                 hintText: 'Habit Name',
+                hintHabiText: widget.habitDate.name,
               ),
               const SizedBox(height: 15),
-              //!drop dwon
+              //!drop down
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -84,30 +110,96 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
               ),
               const SizedBox(height: 15),
               //!custom weekly
-              if (selectedHabitType == 'Custom') CustomHabitType(),
+              if (selectedHabitType == 'Custom')
+                CustomHabitType(
+                  initialSelectedDays:
+                      customDays, // Pass initial custom days here
+                  onDaysSelected: (selectedDays) {
+                    customDays.clear();
+                    customDays.addAll(selectedDays);
+                  },
+                ),
               const SizedBox(height: 18),
               //!button update
-              CustomButton(
-                buttonName: 'Update',
-                onPressed: () {
-                  // Handle the update logic
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return state is UpdateHabitLooding
+                      ? Center(child: CircularProgressIndicator())
+                      : CustomButton(
+                          buttonName: 'Update',
+                          onPressed: () {
+                            // Validation for custom habit type with empty custom days
+                            if (selectedHabitType == 'Custom' &&
+                                customDays.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                // ignore: prefer_const_constructors
+                                SnackBar(
+                                  content: const Text(
+                                      "Please select at least one custom day"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return; // Prevent further execution if validation fails
+                            }
+                            context.read<HomeCubit>().updateHabit(
+                                  habitId: widget.habitDate.habitId,
+                                  habitName: habitNameController.text.isEmpty
+                                      ? widget.habitDate.name
+                                      : habitNameController.text,
+                                  period: selectedHabitType,
+                                  customDays: customDays,
+                                );
+                          },
+                        );
                 },
               ),
+
               const SizedBox(height: 10),
-              //!delet
-              TextButton(
-                onPressed: () {
-                  // Handle delete logic
+              //!delete
+              BlocConsumer<HomeCubit, HomeState>(
+                listener: (context, state) {
+                  if (state is DeleteHabitFail || state is UpdateHabitFail) {
+                    Navigator.pop(context);
+                    AppStuts.showCustomSnackBar(
+                        context, "Error", Icons.close, false);
+                  } else if (state is DeleteHabitSuscsses) {
+                    Navigator.pop(context);
+
+                    AppStuts.showCustomSnackBar(
+                        context,
+                        "${state.massage} '${widget.habitDate.name}' successful",
+                        Icons.check,
+                        true);
+                  } else if (state is UpdateHabitSuscsses) {
+                    Navigator.pop(context);
+
+                    AppStuts.showCustomSnackBar(
+                        context,
+                        "${state.massage} '${habitNameController.text.isEmpty ? widget.habitDate.name : habitNameController.text}' successful",
+                        Icons.check,
+                        true);
+                  }
                 },
-                child: const Center(
-                  child: Text(
-                    "Delete",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
+                builder: (context, state) {
+                  return state is DeleteHabitLooding
+                      ? const Center(child: CircularProgressIndicator())
+                      : TextButton(
+                          onPressed: () async {
+                            await context
+                                .read<HomeCubit>()
+                                .deletHabit(habitId: widget.habitDate.habitId);
+                          },
+                          child: const Center(
+                            child: Text(
+                              "Delete",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        );
+                },
               ),
             ],
           ),
@@ -118,7 +210,14 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
 }
 
 class CustomHabitType extends StatefulWidget {
-  CustomHabitType({super.key});
+  final Function(List<String>) onDaysSelected;
+  final List<String> initialSelectedDays;
+
+  CustomHabitType({
+    super.key,
+    required this.onDaysSelected,
+    required this.initialSelectedDays,
+  });
 
   @override
   State<CustomHabitType> createState() => _CustomHabitTypeState();
@@ -126,16 +225,37 @@ class CustomHabitType extends StatefulWidget {
 
 class _CustomHabitTypeState extends State<CustomHabitType> {
   final List<bool> selectedWeekdays = List.filled(7, false);
-
   final List<String> weekdays = [
-    'Sun',
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat'
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize selectedWeekdays based on initialSelectedDays
+    for (int i = 0; i < weekdays.length; i++) {
+      if (widget.initialSelectedDays.contains(weekdays[i])) {
+        selectedWeekdays[i] = true;
+      }
+    }
+  }
+
+  void _notifyDaysSelected() {
+    List<String> selectedDays = [];
+    for (int i = 0; i < selectedWeekdays.length; i++) {
+      if (selectedWeekdays[i]) {
+        selectedDays.add(weekdays[i]);
+      }
+    }
+    widget.onDaysSelected(selectedDays);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +267,7 @@ class _CustomHabitTypeState extends State<CustomHabitType> {
             setState(() {
               selectedWeekdays[index] = !selectedWeekdays[index];
             });
+            _notifyDaysSelected();
           },
           child: Column(
             children: [
@@ -178,7 +299,7 @@ class _CustomHabitTypeState extends State<CustomHabitType> {
               ),
               const SizedBox(height: 5),
               Text(
-                weekdays[index],
+                weekdays[index].substring(0, 3),
                 style: const TextStyle(fontSize: 14),
               ),
             ],

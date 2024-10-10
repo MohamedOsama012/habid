@@ -1,12 +1,19 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/color.dart';
+import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/data/home_firebase_operation.dart';
+import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/edit_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/to_do_widgets/check_box.dart';
+import 'package:habit_track/main.dart';
 
 class HabitContiner extends StatefulWidget {
-  const HabitContiner({super.key, required this.isDone});
-  final bool isDone;
+  const HabitContiner({super.key, required this.habitDate});
+  final HabitModel habitDate;
 
   @override
   State<HabitContiner> createState() => _HabitContinerState();
@@ -14,18 +21,31 @@ class HabitContiner extends StatefulWidget {
 
 class _HabitContinerState extends State<HabitContiner> {
   late bool isChecked;
+  final FirebaseHomeOperation f = FirebaseHomeOperation();
+
   @override
   void initState() {
-    isChecked = widget.isDone;
+    if (widget.habitDate.progress!.isNotEmpty) {
+      isChecked = widget.habitDate.progress![0].completed;
+    } else {
+      log("hereeee");
+      // f.markHabit(habitId: widget.habitDate.habitId, isComplet: false);
+
+      isChecked = false;
+    }
     super.initState();
   }
 
+  @override
   void showEditHabitDialog(BuildContext context) {
+    log("${widget.habitDate.name} and ${widget.habitDate.habitId}");
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return EditHabitDialog(); // Use the new dialog widget
+        return EditHabitDialog(
+          habitDate: widget.habitDate,
+        ); // Use the new dialog widget
       },
     );
   }
@@ -52,7 +72,7 @@ class _HabitContinerState extends State<HabitContiner> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '5 Prayers',
+                    widget.habitDate.name,
                     style: TextStyle(
                       fontSize: 16.sp,
                       color: isChecked
@@ -69,6 +89,9 @@ class _HabitContinerState extends State<HabitContiner> {
                           setState(() {
                             isChecked = value; // Update the state
                           });
+                          context.read<HomeCubit>().updateDoneHabit(
+                              habitId: widget.habitDate.habitId,
+                              isComplet: value);
                         },
                       ),
                       IconButton(

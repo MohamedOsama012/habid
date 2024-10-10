@@ -1,15 +1,19 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
+import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:habit_track/feature/home/ui/screen/home_screen.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/delete_alert.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class GoalContaner extends StatelessWidget {
-  const GoalContaner({super.key});
+  const GoalContaner({super.key, required this.dateGoal});
+  final Goal dateGoal;
   void showEditHabitDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -22,6 +26,7 @@ class GoalContaner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("${dateGoal.currentProgress} andddd ${dateGoal.total}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -35,7 +40,7 @@ class GoalContaner extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Finish 5 Prayers",
+              dateGoal.name!,
               style: TextAppStyle.subMainTittel.copyWith(fontSize: 22),
             ),
             Row(
@@ -45,7 +50,9 @@ class GoalContaner extends StatelessWidget {
                     animation: true,
                     width: AppScreenUtil.getResponsiveWidth(context, .7),
                     lineHeight: 10,
-                    percent: 0.8,
+                    percent: (dateGoal.total != 0 && dateGoal.total != null)
+                        ? (dateGoal.currentProgress! / dateGoal.total!)
+                        : 0.0,
                     backgroundColor: AppColor.backGroundLinearProgress,
                     linearGradient: const LinearGradient(
                       begin: Alignment.centerLeft,
@@ -67,7 +74,7 @@ class GoalContaner extends StatelessWidget {
               ],
             ),
             Text(
-              "5 from 7 days target",
+              "${dateGoal.currentProgress} from ${dateGoal.total} days target",
               style: TextAppStyle.subTittel.copyWith(color: Colors.black),
             )
           ],

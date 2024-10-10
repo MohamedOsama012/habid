@@ -29,9 +29,13 @@ class TopPartInAlert extends StatelessWidget {
 
 class TextPartInAlert extends StatelessWidget {
   const TextPartInAlert(
-      {super.key, required this.habitNameController, required this.hintText});
+      {super.key,
+      required this.habitNameController,
+      required this.hintText,
+      this.hintHabiText});
   final TextEditingController habitNameController;
   final String hintText;
+  final String? hintHabiText;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -43,7 +47,8 @@ class TextPartInAlert extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         TextFormField(
-            controller: habitNameController, decoration: decorationField()),
+            controller: habitNameController,
+            decoration: decorationField(habitHintName: hintHabiText)),
       ],
     );
   }

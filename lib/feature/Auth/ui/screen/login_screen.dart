@@ -56,8 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is AuthFaileLogin) {
             context.loaderOverlay.hide();
-            AppStuts.showAwesomeSnackBar(
-                context, ContentType.failure, state.errorMassage);
+            AppStuts.showCustomSnackBar(
+                context, state.errorMassage, Icons.close, false);
           } else if (state is AuthLogInSucsses) {
             context.loaderOverlay.hide();
             Navigator.push(
