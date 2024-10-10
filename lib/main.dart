@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:habit_track/feature/home/ui/screen/navbar.dart';
 import 'package:habit_track/firebase_options.dart';
+import 'package:habit_track/splash_screen.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 void main() async {
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(
                 scaffoldBackgroundColor: Colors.white.withOpacity(.988),
               ),
-              home: BottomNavBar()
+              home: splashScreen()
               // const RegisterScreen(),
               ),
         ),

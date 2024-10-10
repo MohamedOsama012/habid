@@ -31,12 +31,10 @@ class _AccountPageState extends State<AccountPage> {
 
   void _onUpdate() {
     if (_formKey.currentState!.validate()) {
-
-
       context.read<AuthCubit>().updateAccount(
-        name: _nameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
+        name: _nameController.text.isNotEmpty ? _nameController.text : "", // Optional field
+        email: _emailController.text.isNotEmpty ? _emailController.text : "", // Optional field
+        password: _passwordController.text, // Required field
       );
     }
   }
@@ -53,8 +51,14 @@ class _AccountPageState extends State<AccountPage> {
           listener: (context, state) {
             if (state is AuthFaileRegister) {
               // Handle failure
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.errorMassage)),
+              );
             } else if (state is AuthRegisterSucsses) {
-              // Handle success
+              // Handle success, you can show a message or navigate
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Account updated successfully!")),
+              );
             }
           },
           child: SingleChildScrollView(
@@ -62,33 +66,31 @@ class _AccountPageState extends State<AccountPage> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Name Field
+                  // Name Field (Optional)
                   CustomTextWithHint(
                     hintNameInside: 'Gasser',
                     hintName: 'Name',
                     controller: _nameController,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
-                      }
+                      // No validation since it's optional
                       return null;
                     },
                   ),
                   SizedBox(height: 10.0),
-                  // Email Field
+                  // Email Field (Optional)
                   CustomTextWithHint(
-                    hintNameInside: 'gasseramr@gmail.com', // Hint text
+                    hintNameInside: 'gasser@gmail.com',
                     hintName: 'Email',
                     controller: _emailController,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                      if (value != null && value.isNotEmpty && !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Please enter a valid email';
                       }
                       return null;
                     },
                   ),
                   SizedBox(height: 10.0),
-                  // Password Field
+                  // Password Field (Required)
                   PasswordField(
                     hintName: 'Password',
                     controller: _passwordController,
@@ -100,9 +102,9 @@ class _AccountPageState extends State<AccountPage> {
                     },
                   ),
                   SizedBox(height: 10.0),
-                  // Confirm Password Field
+                  // Confirm Password Field (Required)
                   PasswordField(
-                    hintName: 'Password Confirmation',
+                    hintName: 'Confirm Password',
                     controller: _confirmPasswordController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
