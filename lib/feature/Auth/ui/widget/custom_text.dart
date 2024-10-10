@@ -38,23 +38,24 @@ class CustomText extends StatelessWidget {
   }
 }
 
- OutlineInputBorder borderTextField() {
-    return const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(4)),
-      borderSide: BorderSide(
-        color: AppColor.borderColor,
-        width: 1.0,
-      ),
-    );
-  }
-    InputDecoration decorationField() {
-    return InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                    border: borderTextField(),
-                    enabledBorder: borderTextField(),
-                    focusedBorder: borderTextField(),
-                    errorBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red)));
-  }
+OutlineInputBorder borderTextField() {
+  return const OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4)),
+    borderSide: BorderSide(
+      color: AppColor.borderColor,
+      width: 1.0,
+    ),
+  );
+}
 
+InputDecoration decorationField({String? habitHintName}) {
+  return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      border: borderTextField(),
+      hintText: habitHintName,
+      hintStyle: TextAppStyle.subTittel,
+      enabledBorder: borderTextField(),
+      focusedBorder: borderTextField(),
+      errorBorder:
+          const OutlineInputBorder(borderSide: BorderSide(color: Colors.red)));
+}

@@ -59,8 +59,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           listener: (context, state) {
             if (state is AuthFaileRegister) {
               context.loaderOverlay.hide();
-              AppStuts.showAwesomeSnackBar(
-                  context, ContentType.failure, state.errorMassage);
+              AppStuts.showCustomSnackBar(
+                  context, state.errorMassage, Icons.close, false);
             } else if (state is AuthRegisterSucsses) {
               context.loaderOverlay.hide();
               Navigator.push(
