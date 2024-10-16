@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:habit_track/core/theme/color.dart';
 
-class LogOutWidget extends StatelessWidget {
-  const LogOutWidget(
-      {super.key, required this.icon, required this.title, required this.show});
-
-  final String title;
+class SettingWidget extends StatelessWidget {
+  const SettingWidget(
+      {super.key,
+      required this.icon,
+      required this.tittel,
+      required this.show});
+  final String tittel;
   final IconData icon;
   final bool show;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -36,19 +37,15 @@ class LogOutWidget extends StatelessWidget {
                   Icon(
                     icon,
                     size: 30,
-                    color: const Color.fromARGB(
-                        242, 238, 52, 38), // Red color for the icon
+                    color: AppColor.primeColor,
                   ),
                   const SizedBox(
                       width:
                           10), // Adds some spacing between the icon and the text
                   Text(
-                    title,
+                    tittel,
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red, // Red color for the title
-                    ),
+                        fontSize: 22, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -57,7 +54,7 @@ class LogOutWidget extends StatelessWidget {
                       padding: EdgeInsets.only(right: 15),
                       child: Icon(
                         Icons.arrow_forward_ios,
-                        color: Colors.red, // Red color for the arrow icon
+                        color: AppColor.primeColor,
                       ),
                     )
                   : SizedBox(),

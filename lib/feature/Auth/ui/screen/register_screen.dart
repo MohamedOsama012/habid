@@ -8,6 +8,7 @@ import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
+import 'package:habit_track/feature/Auth/data/auth_operation.dart';
 import 'package:habit_track/feature/Auth/ui/screen/login_screen.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_text.dart';
@@ -31,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-
+  AuthOperation f = AuthOperation();
   @override
   void dispose() {
     _nameController.dispose();
@@ -56,16 +57,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Padding(
         padding: EdgeInsets.only(top: 50.h, left: 25.w, right: 25.w),
         child: BlocListener<AuthCubit, AuthState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is AuthFaileRegister) {
               context.loaderOverlay.hide();
               AppStuts.showCustomSnackBar(
                   context, state.errorMassage, Icons.close, false);
             } else if (state is AuthRegisterSucsses) {
+              await f.getUserData();
               context.loaderOverlay.hide();
-              Navigator.push(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const BottomNavBar()),
+                (Route<dynamic> route) => false,
               );
             } else {
               context.loaderOverlay.show(
@@ -134,12 +137,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintName: 'Email',
                     controller: _emailController,
                     validator: (value) {
+                      // Check if the field is empty
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
+
+                      // Define a regular expression for validating email
+                      String pattern =
+                          r'^[a-zA-Z0-9.a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+                      RegExp regex = RegExp(pattern);
+
+                      // Check if the email is valid
+                      if (!regex.hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+
+                      // If all validations pass
                       return null;
                     },
                   ),
+
                   AppScreenUtil.hight(10),
                   //!pass
                   PasswordField(

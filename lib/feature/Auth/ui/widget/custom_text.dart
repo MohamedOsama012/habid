@@ -6,10 +6,11 @@ class CustomText extends StatelessWidget {
   final String hintName;
   final TextEditingController controller;
   final String? Function(String?)? validator;
-
+  final String? hintText;
   const CustomText({
     super.key,
     required this.hintName,
+    this.hintText,
     required this.controller,
     required this.validator,
   });
@@ -29,7 +30,7 @@ class CustomText extends StatelessWidget {
           child: TextFormField(
             controller: controller,
             validator: validator,
-            decoration: decorationField(),
+            decoration: decorationField(habitHintName: hintText),
             autovalidateMode: AutovalidateMode.onUserInteraction,
           ),
         ),

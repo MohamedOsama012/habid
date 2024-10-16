@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:habit_track/core/theme/color.dart';
 
-class LogOutWidget extends StatelessWidget {
-  const LogOutWidget(
-      {super.key, required this.icon, required this.title, required this.show});
+class NotficationWidget extends StatefulWidget {
+  const NotficationWidget({
+    super.key,
+  });
 
-  final String title;
-  final IconData icon;
-  final bool show;
+  @override
+  _NotficationWidgetState createState() => _NotficationWidgetState();
+}
+
+class _NotficationWidgetState extends State<NotficationWidget> {
+  bool _isNotificationEnabled = false; // Initial state for the switch
 
   @override
   Widget build(BuildContext context) {
@@ -34,33 +38,30 @@ class LogOutWidget extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    icon,
+                    Icons.notifications_none_outlined,
                     size: 30,
-                    color: const Color.fromARGB(
-                        242, 238, 52, 38), // Red color for the icon
+                    color: AppColor.primeColor,
                   ),
                   const SizedBox(
-                      width:
-                          10), // Adds some spacing between the icon and the text
+                    width: 8, // Adds some spacing between the icon and the text
+                  ),
                   Text(
-                    title,
+                    "Notfication",
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red, // Red color for the title
-                    ),
+                        fontSize: 22, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
-              show
-                  ? Padding(
-                      padding: EdgeInsets.only(right: 15),
-                      child: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.red, // Red color for the arrow icon
-                      ),
-                    )
-                  : SizedBox(),
+              // Removed the arrow icon and kept the Switch
+              Switch(
+                value: _isNotificationEnabled,
+                onChanged: (bool value) {
+                  setState(() {
+                    _isNotificationEnabled = value; // Toggle switch state
+                  });
+                },
+                activeTrackColor: AppColor.primeColor,
+              ),
             ],
           ),
         ),

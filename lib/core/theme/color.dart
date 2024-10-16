@@ -19,4 +19,6 @@ class AppColor {
   // Second gradient color
   static const Color linearProgress = Color(0xFF4bd582);
   static const Color backGroundLinearProgress = Color(0xFFe7e7e7);
+
+  static const Color primeColor = Color(0xFF01b1d8);
 }

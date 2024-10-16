@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:habit_track/core/global/global_widget/app_stuts.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
+import 'package:habit_track/feature/Auth/data/auth_operation.dart';
 import 'package:habit_track/feature/Auth/ui/screen/register_screen.dart';
 
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
@@ -30,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  AuthOperation f = AuthOperation();
 
   @override
   void dispose() {
@@ -42,8 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       String email = _emailController.text;
       String password = _passwordController.text;
-      print("Email: $email");
-      print("Password: $password");
+
       context.read<AuthCubit>().logIN(
           emial: _emailController.text, password: _passwordController.text);
     }
@@ -53,16 +56,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<AuthCubit, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is AuthFaileLogin) {
             context.loaderOverlay.hide();
             AppStuts.showCustomSnackBar(
                 context, state.errorMassage, Icons.close, false);
           } else if (state is AuthLogInSucsses) {
+            await f.getUserData();
+
             context.loaderOverlay.hide();
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const BottomNavBar()),
+              (Route<dynamic> route) => false,
             );
           } else {
             context.loaderOverlay.show(
@@ -112,7 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                   AppScreenUtil.hight(35),

@@ -61,7 +61,22 @@ class _TabBarToDoState extends State<TabBarToDo> {
                             ? state.habitData.length
                             : 1; // Show 2 or all habits
                     return state.habitData.isEmpty
-                        ? Center(child: Text("not Date"))
+                        ? Center(
+                            child: Text(
+                              "Not Found Habit Yet !!",
+                              style: TextAppStyle.subMainTittel.copyWith(
+                                fontSize: 18.sp,
+                                foreground: Paint()
+                                  ..shader = const LinearGradient(
+                                    colors: [
+                                      Color(0xFF08D9D6), // #08D9D6
+                                      Color(0xFF0083B0), // #0083B0
+                                    ],
+                                  ).createShader(
+                                      const Rect.fromLTWH(0, 0, 200, 70)),
+                              ),
+                            ),
+                          )
                         : ListView.builder(
                             shrinkWrap: true,
                             itemCount: habitCount,

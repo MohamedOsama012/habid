@@ -54,7 +54,7 @@ class HomeCubit extends Cubit<HomeState> {
       await getnotDoneHabit(result);
       await getAllGoal(result);
       log("Updated goalList: ${goalList.length}");
-      log("name ${goalList[1].name}");
+      //  log("name ${goalList[1].name}");
       emit(GetHabitSucsess(habitData: result));
     } on Exception catch (e) {
       emit(GetHabitFail(massage: e.toString()));
@@ -63,7 +63,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   creatGoal({
     required String name,
-    required String period,
+    required int period,
     required habitId,
   }) async {
     emit(CreatGoalLoading());
@@ -82,6 +82,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     for (int i = 0; i < result.length; i++) {
       if (result[i].goal != null) {
+        //if (result[i].goal!.total! + 1 != result[i].goal!.currentProgress)
         goalList.add(result[i].goal!);
       }
     }

@@ -8,7 +8,7 @@ class GoalFirebaseOperation {
 
   Future<bool> creeateGoal(
       {required String goalName,
-      required String period,
+      required int period,
       required String habitId}) async {
     String userId = firebaseService.getFirebaseUserId();
     String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -34,7 +34,7 @@ class GoalFirebaseOperation {
           .update({
         'goal': {
           'goal_name': goalName,
-          'total_day': period == '1 week (7 Days)' ? 7 : 30,
+          'total_day': period,
           'done_day': isCompleted ? 1 : 0
         }
       });

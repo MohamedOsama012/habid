@@ -22,21 +22,18 @@ class FirebaseOperationCalender {
         .collection('dailySummary')
         .get();
 
-    // Loop through each document (representing a date)
     for (var habitDoc in habitByDateSnapshot.docs) {
       String docId = habitDoc.id; // The document ID represents the date
-      DateTime date = DateTime.parse(docId); // Convert docId to DateTime
+      DateTime date = DateTime.parse(docId);
 
       HabitDialySummaryModel data = HabitDialySummaryModel.fromMap(
           habitDoc.data() as Map<String, dynamic>);
 
-      List<String> notDoneHabit =
-          data.notDoneHabit; // Incomplete habits for this date
+      List<String> notDoneHabit = data.notDoneHabit; // Incomplete habits list
 
-      // Check if all habits are completed (no habit in the notDone list)
+      // Check if all habits are
       bool isCompleted = notDoneHabit.isEmpty;
 
-      // Define the icon based on habit completion status
       if (isCompleted) {
         events[date] = [
           Event(

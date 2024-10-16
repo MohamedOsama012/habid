@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 class FirebaseHomeOperation {
   FirebaseService firebaseService = FirebaseService();
+//!create habit
   Future<bool> createHabit({
     required String habitName,
     required String period,
@@ -66,6 +67,7 @@ class FirebaseHomeOperation {
     }
   }
 
+//! mark habit
   Future<bool> markHabit(
       {required String habitId, required bool isComplet}) async {
     String currentUserId = firebaseService.getFirebaseUserId();
@@ -95,6 +97,7 @@ class FirebaseHomeOperation {
           await updateGoal(habitId: habitId, isComplet: isComplet);
         }
       }
+      //!update dialy summary
       await updateDailySummary(habitId: habitId, isComplet: isComplet);
       return true;
     } on Exception catch (e) {
@@ -102,6 +105,7 @@ class FirebaseHomeOperation {
     }
   }
 
+//! update goal
   updateGoal({
     required String habitId,
     required bool isComplet,
@@ -135,6 +139,7 @@ class FirebaseHomeOperation {
     }
   }
 
+//! update dialy summary
   Future<bool> updateDailySummary({
     required String habitId,
     required bool isComplet,
@@ -173,6 +178,7 @@ class FirebaseHomeOperation {
     }
   }
 
+//!git all
   Future<List<HabitModel>> getAllHabits() async {
     List<HabitModel> habitsList = [];
     String userId = firebaseService.getFirebaseUserId();
@@ -251,6 +257,7 @@ class FirebaseHomeOperation {
     return habitsList;
   }
 
+//! delet habit
   Future<bool> deletHabit({required String habitId}) async {
     String userId = firebaseService.getFirebaseUserId();
     String todayDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -277,6 +284,7 @@ class FirebaseHomeOperation {
     }
   }
 
+//! update habit
   updateHabitDate(
       {required String habitId,
       required String habitName,
