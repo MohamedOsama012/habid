@@ -46,8 +46,8 @@ class CustomButton extends StatelessWidget {
           child: Text(
             buttonName,
             style: TextAppStyle.subTittel.copyWith(
-              color: Colors.white, // Change text color if isSend is true
-            ),
+                color: Colors.white, // Change text color if isSend is true
+                fontSize: 20),
           ),
         ),
       ),

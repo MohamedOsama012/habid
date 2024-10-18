@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:habit_track/core/global/global_widget/shimmer_widget.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
@@ -21,7 +22,6 @@ class _TabBarToDoState extends State<TabBarToDo> {
     return DefaultTabController(
       length: 2, // Two tabs: "To do" and "Not to do"
       child: Container(
-        // Removed Expanded
         color: Colors.white,
         child: Scaffold(
           appBar: AppBar(
@@ -33,17 +33,17 @@ class _TabBarToDoState extends State<TabBarToDo> {
               ),
               unselectedLabelColor: AppColor.subText,
               labelColor: Colors.black,
-              labelStyle: TextAppStyle.mainTittel.copyWith(fontSize: 30.sp),
+              labelStyle: TextAppStyle.mainTittel.copyWith(fontSize: 25.sp),
               indicatorColor: Colors.white,
               dividerColor: Colors.white,
               tabs: [
                 Tab(
                   height: 50.h,
-                  text: 'To do',
+                  text: 'To Do',
                 ),
                 Tab(
                   height: 50.h,
-                  text: 'Not to do',
+                  text: 'Uncomplete',
                 ),
               ],
             ),
@@ -54,12 +54,11 @@ class _TabBarToDoState extends State<TabBarToDo> {
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
                   if (state is GetHabitSucsess) {
-                    // Show limited or all habits based on widget.showAll
                     int habitCount = widget.showAll
                         ? state.habitData.length
                         : state.habitData.length >= 2
                             ? state.habitData.length
-                            : 1; // Show 2 or all habits
+                            : 1;
                     return state.habitData.isEmpty
                         ? Center(
                             child: Text(
@@ -87,7 +86,21 @@ class _TabBarToDoState extends State<TabBarToDo> {
                             },
                           );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return ListView.builder(
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 4),
+                          child: ShimmerWidget(
+                            width: double.infinity,
+                            height: 50.h,
+                            borderRadius: BorderRadius.circular(
+                                16), // Optional: Adjust the border radius
+                          ),
+                        );
+                      },
+                      itemCount: 2,
+                    );
                   }
                 },
               ),

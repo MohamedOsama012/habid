@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/feature/timer/task.dart';
 import 'dart:async';
 import 'dart:math';
@@ -282,11 +283,11 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: AppColor.primeColor,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.add, color: Colors.blue, size: 40),
+                        icon: Icon(Icons.add, color: Colors.white, size: 40),
                         onPressed: () {
                           showModalBottomSheet(
                             context: context,

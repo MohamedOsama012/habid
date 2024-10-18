@@ -1,160 +1,117 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:habit_track/service/const_varible.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthOperation {
-  //sign
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<String> _handleFirebaseAuthException(FirebaseAuthException e) {
+    log(e.code);
+    switch (e.code) {
+      case 'weak-password':
+        return Future.value('The password provided is too weak.');
+      case 'email-already-in-use':
+        return Future.value('The account already exists for that email.');
+      case 'invalid-email':
+        return Future.value('Invalid email address.');
+      case 'user-not-found':
+        return Future.value('User not found.');
+      case 'wrong-password':
+        return Future.value('Wrong password.');
+      case 'too-many-requests':
+        return Future.value('Too many requests. Please try again later.');
+      case 'invalid-credential':
+        return Future.value('Invalid credentials.');
+      case 'operation-not-allowed':
+        return Future.value('Operation not allowed.');
+      case 'network-request-failed':
+        return Future.value(
+            'Network request failed. Please check your internet connection.');
+      default:
+        return Future.value(
+            'An unexpected error occurred. Please try again later.');
+    }
+  }
+
+  // Register
   Future<String> register(String emailAddress, String password) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await _auth.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
-      return "succses";
+      return "success";
     } on FirebaseAuthException catch (e) {
-      log("enter heeeeeeeeeeeeeeeer");
-      log(e.code);
-      switch (e.code) {
-        case 'weak-password':
-          return 'The password provided is too weak.';
-        case 'email-already-in-use':
-          return 'The account already exists for that email.';
-        case 'invalid-email':
-          return 'Invalid email address.';
-        case 'user-not-found':
-          return 'User not found.';
-        case 'wrong-password':
-          return 'Wrong password.';
-        case 'too-many-requests':
-          return 'Too many requests. Please try again later.';
-        case 'invalid-credential':
-          return 'Wrong password.';
-        case 'operation-not-allowed':
-          return 'Operation not allowed.';
-        case 'network-request-failed':
-          return 'Network request failed. Please check your internet connection.';
-        default:
-          return 'An unexpected error occurred. Please try again later.';
-      }
+      return _handleFirebaseAuthException(e);
     } catch (e) {
       return e.toString();
     }
   }
 
-//sign in
+  // Sign in
   Future<String> signIn(String emailAddress, String password) async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailAddress, password: password);
+      await _auth.signInWithEmailAndPassword(
+          email: emailAddress, password: password);
       return "success";
     } on FirebaseAuthException catch (e) {
-      log("wwwwwwwwwwwwwwwwww");
-      log("Error message: ${e.message}");
-
-      log(e.code);
-      switch (e.code) {
-        case 'weak-password':
-          return 'The password provided is too weak.';
-        case 'email-already-in-use':
-          return 'The account already exists for that email.';
-        case 'invalid-email':
-          return 'Invalid email address.';
-        case 'user-not-found':
-          return 'User not found.';
-        case 'wrong-password':
-          return 'Wrong password.';
-        case 'invalid-credential':
-          return 'Please try again your emial or Password not correct.';
-        case 'too-many-requests':
-          return 'Too many requests. Please try again later.';
-        case 'operation-not-allowed':
-          return 'Operation not allowed.';
-        case 'network-request-failed':
-          return 'Network request failed. Please check your internet connection.';
-        default:
-          return 'An unexpected error occurred. Please try again later.';
-      }
+      return _handleFirebaseAuthException(e);
     } catch (e) {
       return e.toString();
     }
   }
 
-//forget password
+  // Forget password
   Future<String> forgetPassword(String emailAddress) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: emailAddress);
+      await _auth.sendPasswordResetEmail(email: emailAddress);
       return "success";
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        return ' No user found for that email.';
-      }
+      return (e.code == 'user-not-found')
+          ? 'No user found for that email.'
+          : 'An unexpected error occurred. Please try again later.';
     } catch (e) {
       return e.toString();
     }
-    return 'null';
   }
 
-//get user data
+  // Get user data
   Future<void> getUserData() async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = _auth.currentUser;
 
-    String userId = user!.uid;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('user_info').doc(user.uid).get();
 
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('user_info')
-        .doc(userId)
-        .get();
-
-    if (userDoc.exists) {
-      userName = userDoc.get('name');
-      userEmial = userDoc.get('email');
+      if (userDoc.exists) {
+        userName = userDoc.get('name');
+        userEmial = user.email;
+      }
     }
   }
 
-  Future<bool> verfcationEmial(
-      {required String newEmail, required String password}) async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    try {
-      final credential = EmailAuthProvider.credential(
-        email: userEmial!,
-        password: password,
-      );
-      await user!.reauthenticateWithCredential(credential); // Re-authenticate
-      await user.verifyBeforeUpdateEmail(newEmail);
-      return true;
-    } on Exception catch (e) {
-      return false;
-    }
-  }
-
-//udate user data
+  // Update user data
   Future<String> updateUserData({
     required String name,
     required String newEmail,
   }) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    String userId = user!.uid;
+    User? user = _auth.currentUser;
 
     try {
-      await user.reload();
-      user = FirebaseAuth.instance.currentUser;
+      await user?.reload();
+      user = _auth.currentUser;
 
       if (user!.emailVerified) {
-        // Update both displayName and Firestore data after email verification
-        await FirebaseFirestore.instance
-            .collection('user_info')
-            .doc(userId)
-            .update({
+        await _firestore.collection('user_info').doc(user.uid).update({
           'email': newEmail,
           'name': name,
         });
-        log("succcseeesssss");
-        return "success"; // Return success if everything goes well
+        return "success";
       } else {
-        return "Verification"; // User hasn't verified email yet
+        return "Verification required.";
       }
     } catch (e) {
       log(e.toString());
@@ -162,10 +119,17 @@ class AuthOperation {
     }
   }
 
-//change password
+  signInwithGoogle() async {
+    // Implement Google Sign-In here
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
-//signout
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: gAuth.accessToken,
+      idToken: gAuth.idToken,
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

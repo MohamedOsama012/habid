@@ -24,28 +24,24 @@ class _HabitContinerState extends State<HabitContiner> {
   final FirebaseHomeOperation f = FirebaseHomeOperation();
 
   @override
+  //! to check if habit is completed
   void initState() {
     if (widget.habitDate.progress!.isNotEmpty) {
       isChecked = widget.habitDate.progress![0].completed;
     } else {
-      log("hereeee");
-      // f.markHabit(habitId: widget.habitDate.habitId, isComplet: false);
-
       isChecked = false;
     }
     super.initState();
   }
 
-  @override
   void showEditHabitDialog(BuildContext context) {
-    log("${widget.habitDate.name} and ${widget.habitDate.habitId}");
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return EditHabitDialog(
           habitDate: widget.habitDate,
-        ); // Use the new dialog widget
+        );
       },
     );
   }

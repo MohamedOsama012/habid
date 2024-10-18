@@ -35,7 +35,8 @@ class GoalFirebaseOperation {
         'goal': {
           'goal_name': goalName,
           'total_day': period,
-          'done_day': isCompleted ? 1 : 0
+          'done_day': isCompleted ? 1 : 0,
+          'habit_id': habitId
         }
       });
 
@@ -61,7 +62,20 @@ class GoalFirebaseOperation {
     return habitsList;
   }
 
-  //get all goal
-  //update goal
-  //delet goal
+  Future<bool> deleteGoal({required String habitId}) async {
+    String userId = firebaseService.getFirebaseUserId();
+    try {
+      await FirebaseFirestore.instance
+          .collection('user_info')
+          .doc(userId)
+          .collection('habits')
+          .doc(habitId)
+          .update({
+        'goal': FieldValue.delete(),
+      });
+      return true;
+    } on Exception catch (e) {
+      return false;
+    }
+  }
 }

@@ -1,14 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
-import 'package:habit_track/feature/home/ui/widget/alert_widget/add_habit_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/create_goal_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/goal_widgets/goal_continer.dart';
-import 'package:popover/popover.dart';
 
 class GoalWidget extends StatelessWidget {
   const GoalWidget({super.key});
@@ -16,7 +12,6 @@ class GoalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var cubit = BlocProvider.of<HomeCubit>(context);
-    log("enter ti goal widget");
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 18),
       child: Container(

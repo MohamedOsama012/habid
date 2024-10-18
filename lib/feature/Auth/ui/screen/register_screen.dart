@@ -1,9 +1,10 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
@@ -32,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  AuthOperation f = AuthOperation();
+  AuthOperation authFirebaseOperation = AuthOperation();
   @override
   void dispose() {
     _nameController.dispose();
@@ -63,7 +64,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               AppStuts.showCustomSnackBar(
                   context, state.errorMassage, Icons.close, false);
             } else if (state is AuthRegisterSucsses) {
-              await f.getUserData();
+              //! if succsess get user data
+              await authFirebaseOperation.getUserData();
               context.loaderOverlay.hide();
               Navigator.pushAndRemoveUntil(
                 context,
@@ -91,32 +93,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         "Sign Up",
                         style: TextAppStyle.mainTittel,
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 30.h),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Log In",
-                                style: TextAppStyle.subTittel,
-                              ),
-                              AppScreenUtil.width(6),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: AppColor.subText,
-                                size: 18,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                   AppScreenUtil.hight(25),
@@ -142,17 +118,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return 'Please enter your email';
                       }
 
-                      // Define a regular expression for validating email
                       String pattern =
                           r'^[a-zA-Z0-9.a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
                       RegExp regex = RegExp(pattern);
 
-                      // Check if the email is valid
                       if (!regex.hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
 
-                      // If all validations pass
                       return null;
                     },
                   ),
@@ -197,7 +170,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   AppScreenUtil.hight(10),
 
                   //!googal
-                  const GoogalButton()
+                  GoogalButton(
+                    onTap: () {},
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 30.h),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // Center the text
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            text: 'Already have an account?  ',
+                            style: TextAppStyle
+                                .subTittel, // Style for the normal text
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Login',
+                                style: TextAppStyle.subTittel.copyWith(
+                                  color: AppColor.primeColor,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 18,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginScreen(),
+                                      ),
+                                    );
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -206,4 +217,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
+  // Future<void> handleGoogleSignIn(BuildContext context) async {
+  //   try {
+  //     final userCredential = await AuthOperation().signInwithGoogle();
+  //     if (userCredential != null) {
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => const BottomNavBar()),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Google Sign-In was cancelled.'),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e, stackTrace) {
+  //     // Log the error and stack trace for debugging
+  //     print('Google Sign-In Error: $e');
+  //     print('Stack Trace: $stackTrace');
+
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Google Sign-In failed: $e'),
+  //       ),
+  //     );
+  //   }
+  // }
 }

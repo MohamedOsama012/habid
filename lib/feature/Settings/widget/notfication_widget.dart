@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habit_track/core/theme/color.dart';
+import 'package:habit_track/service/cash_helper.dart';
+import 'package:habit_track/service/const_varible.dart';
 
 class NotficationWidget extends StatefulWidget {
   const NotficationWidget({
@@ -11,8 +13,6 @@ class NotficationWidget extends StatefulWidget {
 }
 
 class _NotficationWidgetState extends State<NotficationWidget> {
-  bool _isNotificationEnabled = false; // Initial state for the switch
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -35,29 +35,30 @@ class _NotficationWidgetState extends State<NotficationWidget> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
+              const Row(
                 children: [
                   Icon(
                     Icons.notifications_none_outlined,
                     size: 30,
                     color: AppColor.primeColor,
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 8, // Adds some spacing between the icon and the text
                   ),
                   Text(
                     "Notfication",
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
               // Removed the arrow icon and kept the Switch
               Switch(
-                value: _isNotificationEnabled,
+                value: isNotificationEnabled!,
                 onChanged: (bool value) {
                   setState(() {
-                    _isNotificationEnabled = value; // Toggle switch state
+                    isNotificationEnabled = value; // Toggle switch state
+                    CashNetwork.InsertToCash(
+                        key: 'isNotificationEnabled', value: value);
                   });
                 },
                 activeTrackColor: AppColor.primeColor,

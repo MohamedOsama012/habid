@@ -1,16 +1,11 @@
-import 'dart:developer';
-
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
-import 'package:habit_track/core/theme/style.dart'; // Adjust this import as necessary
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_text.dart';
-import 'package:habit_track/feature/Settings/screen/settting.dart';
-import 'package:habit_track/feature/Settings/widget/CustomTextWithHint.dart'; // Import your new widget here
 import 'package:habit_track/feature/Auth/ui/widget/password_field.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
 import 'package:habit_track/service/const_varible.dart';
@@ -55,17 +50,17 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update Account'),
+        title: const Text('Update Account'),
         backgroundColor: AppColor.backgroundColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new), // The back icon
+          icon: const Icon(Icons.arrow_back_ios_new), // The back icon
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: BlocListener<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state is UserVerificatiSuccses) {
@@ -87,13 +82,6 @@ class _AccountPageState extends State<AccountPage> {
               setState(() {});
               Navigator.pop(context);
             }
-            // else {
-            //   context.loaderOverlay.show(
-            //     widgetBuilder: (progress) {
-            //       return AppStuts.myLoading();
-            //     },
-            //   );
-            // }
           },
           child: SingleChildScrollView(
             child: Form(
@@ -104,10 +92,14 @@ class _AccountPageState extends State<AccountPage> {
                     hintName: "Name",
                     hintText: userName,
                     controller: _nameController,
-                    validator: (value) {},
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
                   ),
                   AppScreenUtil.hight(15),
-                  // Email Field (Optional)
                   CustomText(
                     hintName: "Email",
                     hintText: userEmial,
@@ -119,8 +111,9 @@ class _AccountPageState extends State<AccountPage> {
                       RegExp regex = RegExp(pattern);
 
                       // Allow empty value
+
                       if (value == null || value.isEmpty) {
-                        return null;
+                        return 'Please enter your password';
                       }
 
                       // Check if the email is valid
@@ -143,11 +136,8 @@ class _AccountPageState extends State<AccountPage> {
                     },
                   ),
                   AppScreenUtil.hight(25),
-
                   BlocConsumer<AuthCubit, AuthState>(
-                    listener: (context, state) {
-                      // TODO: implement listener
-                    },
+                    listener: (context, state) {},
                     builder: (context, state) {
                       return CustomButton(
                         buttonName: state is UserVerificatiSuccses

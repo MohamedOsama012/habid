@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/cubit/goal_cubit/cubit/goal_cubit.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/compont_widget_fort_alert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
-import 'package:flutter/material.dart';
 
 class CreateNewGoal extends StatefulWidget {
   const CreateNewGoal({super.key});
@@ -25,7 +24,7 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
   @override
   void initState() {
     super.initState();
-    // Fetch all habits when this widget is initialized
+    //!git all habit
     context.read<GoalCubit>().getAllHabitInSystem();
   }
 
@@ -175,9 +174,6 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
                           buttonName: 'Create',
                           onPressed: () {
                             if (habitDays != null && habitDays! > 0) {
-                              print('Habit Name: $habitId');
-                              print('Goal Period: $habitDays days');
-                              print('Goal Name: ${goalNameControllar.text}');
                               context.read<HomeCubit>().creatGoal(
                                   name: goalNameControllar.text,
                                   period: habitDays!,

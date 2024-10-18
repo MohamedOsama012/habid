@@ -1,17 +1,20 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/style.dart';
+import 'package:habit_track/feature/home/ui/screen/notfication_screen.dart';
 import 'package:habit_track/service/const_varible.dart';
+import 'package:habit_track/service/notfication_helper.dart';
 import 'package:intl/intl.dart'; // Import intl for date formatting
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class TopPge extends StatelessWidget {
-  // Add userName as a required parameter
   const TopPge({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get the current date and format it
     String formattedDate =
         DateFormat('EEE, d MMM. yyyy').format(DateTime.now());
 
@@ -58,11 +61,13 @@ class TopPge extends StatelessWidget {
               ),
             ],
           ),
-          // Notification icon button
           IconButton(
-            onPressed: () {
-              // Add your notification action here
-              print('Notification button pressed');
+            onPressed: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotifcationScreen()),
+              );
             },
             icon: const Icon(
               Icons.notifications,

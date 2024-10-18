@@ -27,7 +27,7 @@ class _TopSettingPageState extends State<TopSettingPage> {
         return Container(
           height: 110.h,
           width: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               color: AppColor.primeColor,
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(50),

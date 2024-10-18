@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:habit_track/feature/Auth/data/auth_operation.dart';
-import 'package:habit_track/service/cash_helper.dart';
 import 'package:habit_track/service/const_varible.dart';
 import 'package:habit_track/service/firebase_service.dart';
 import 'package:meta/meta.dart';
@@ -12,8 +12,9 @@ part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
-  AuthOperation auth = AuthOperation(); //register and login
+  AuthOperation authFirebaseOperation = AuthOperation();
   FirebaseService firebaseService = FirebaseService(); //set date in firebase
+  bool customEmailVerified = false;
 
   //!register
   Future<void> register(
@@ -22,7 +23,7 @@ class AuthCubit extends Cubit<AuthState> {
       required String name}) async {
     emit(AuthLoading());
     try {
-      var result = await auth.register(emial, password);
+      var result = await authFirebaseOperation.register(emial, password);
       if (result == "succses") {
         String idUser = firebaseService.getFirebaseUserId();
         await setAuthUserData(email: emial, name: name, id: idUser);
@@ -39,7 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> logIN({required String emial, required String password}) async {
     emit(AuthLoading());
     try {
-      var result = await auth.signIn(emial, password);
+      var result = await authFirebaseOperation.signIn(emial, password);
 
       if (result == "success") {
         emit(AuthLogInSucsses());
@@ -51,7 +52,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-//!set user data
+//!set user data in firestore
   Future<void> setAuthUserData(
       {required String email, required String name, required String id}) async {
     try {
@@ -67,7 +68,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-//update user data
+//!update user data
   void updateUserData({
     required String name,
     required String email,
@@ -75,7 +76,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(UpdateUserDataLooding());
     if (name != userName || email != userEmial) {
       try {
-        final result = await auth.updateUserData(
+        final result = await authFirebaseOperation.updateUserData(
           name: name,
           newEmail: email,
         );
@@ -96,19 +97,20 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+//! verfication emial
   verficationEmailFun(
       {required String newEmail,
       required String password,
       required String name}) async {
-    emit(UserVerificationLoad()); // Start loading
+    emit(UserVerificationLoad());
     User? user = FirebaseAuth.instance.currentUser;
 
     try {
       await user!.reload();
       user = FirebaseAuth.instance.currentUser;
-      if (!user!.emailVerified) {
+      if (!customEmailVerified) {
         final credential = EmailAuthProvider.credential(
-          email: userEmial!,
+          email: user!.email!,
           password: password,
         );
         await user.reauthenticateWithCredential(credential);
@@ -117,20 +119,27 @@ class AuthCubit extends Cubit<AuthState> {
         emit(UserVerificatiSuccses());
       } else {
         updateUserData(email: newEmail, name: name);
+        customEmailVerified = false;
       }
     } on FirebaseAuthException catch (e) {
-      log(e.toString());
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: newEmail, password: password);
-      verficationEmailFun(name: name, newEmail: newEmail, password: password);
+      if (e.code == 'invalid-credential') {
+        emit(UpdateUserDataFail(errorMessage: "password not correct"));
+      } else if (e.code == 'user-token-expired') {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: newEmail, password: password);
+        customEmailVerified = true;
+        verficationEmailFun(name: name, newEmail: newEmail, password: password);
+      }
+    } catch (e) {
+      UpdateUserDataFail(errorMessage: "please tray Agin");
     }
   }
 
-//forget password
+//!forget password
   Future<void> forgetPassword({required String emial}) async {
     emit(AuthForgetPasswordLoad());
     try {
-      var result = await auth.forgetPassword(emial);
+      var result = await authFirebaseOperation.forgetPassword(emial);
 
       if (result == "success") {
         emit(AuthForgetPasswordSucsses());
@@ -139,17 +148,6 @@ class AuthCubit extends Cubit<AuthState> {
       }
     } on Exception catch (e) {
       emit(AuthForgetPasswordFail(errorMassage: e.toString()));
-    }
-  }
-
-//logout
-  Future<void> logOut() async {
-    try {
-      await auth.signOut();
-      emit(
-          AuthLogOutSucsses()); // Emit an initial state or a logout success state
-    } catch (e) {
-      log('Error logging out: $e');
     }
   }
 

@@ -61,7 +61,7 @@ class _HabitCalendarState extends State<HabitCalendar> {
             height: AppScreenUtil.getResponsiveHeight(context, .46),
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             child: CalendarCarousel<Event>(
-              todayButtonColor: habitStatusMap.events.isEmpty
+              todayButtonColor: habitStatusMap.events[today] == null
                   ? Colors.blue
                   : Colors.transparent,
               markedDatesMap: habitStatusMap,

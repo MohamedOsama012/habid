@@ -8,12 +8,12 @@ class CashNetwork {
   // set - get -delete - clear
 
   static Future<bool> InsertToCash(
-      {required String key, required String value}) async {
-    return await shardPref.setString(key, value);
+      {required String key, required bool value}) async {
+    return await shardPref.setBool(key, value);
   }
 
-  static String GetFromCash({required String key}) {
-    return shardPref.getString(key) ?? "";
+  static bool GetFromCash({required String key}) {
+    return shardPref.getBool(key) ?? true;
   }
 
   static Future<bool> DeletFromCach({required String key}) async {

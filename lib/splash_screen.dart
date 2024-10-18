@@ -25,12 +25,12 @@ class _splashScreenState extends State<splashScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BottomNavBar()),
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
         );
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => RegisterScreen()),
+          MaterialPageRoute(builder: (context) => const RegisterScreen()),
         );
       }
     });
@@ -43,7 +43,7 @@ class _splashScreenState extends State<splashScreen> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/splash/SplashWithLogo-01.jpg',
+            'assets/images/splash.jpg',
             fit: BoxFit.cover,
           ),
           const Center(

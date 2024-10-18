@@ -57,3 +57,9 @@ final class CreatGoalLoading extends HomeState {}
 final class CreatGoalSucsses extends HomeState {}
 
 final class CreatGoalFail extends HomeState {}
+
+final class DeleteGoalLoad extends HomeState {}
+
+final class DeleteGoalSuccsess extends HomeState {}
+
+final class DeleteGoalFail extends HomeState {}

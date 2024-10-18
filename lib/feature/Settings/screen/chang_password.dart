@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/Auth/ui/widget/password_field.dart';
@@ -27,16 +27,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           _isLoading = true;
         });
 
-        // Re-authenticate with old password
+        //! Re-authenticate with old password
         final credential = EmailAuthProvider.credential(
           email: user.email!,
           password: _oldPasswordController.text,
         );
         await user.reauthenticateWithCredential(credential);
 
-        // Check if new passwords match
-
-        // Update password
+        //! Update password
         await user.updatePassword(_newPasswordController.text);
         AppStuts.showCustomSnackBar(
             context, 'Password changed successfully', Icons.check, true);
@@ -44,6 +42,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           Navigator.pop(context);
         });
       } on FirebaseAuthException catch (e) {
+        //!error
         AppStuts.showCustomSnackBar(
             context, 'old Password Not Correct', Icons.close, false);
       } finally {
@@ -58,10 +57,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cahnge Password'),
+        title: const Text('Cahnge Password'),
         backgroundColor: AppColor.backgroundColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new), // The back icon
+          icon: const Icon(Icons.arrow_back_ios_new), // The back icon
           onPressed: () {
             Navigator.pop(context);
           },
@@ -83,7 +82,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               PasswordField(
                 hintName: 'New Password',
                 controller: _newPasswordController,
@@ -97,11 +96,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               RememberMeForgotPasswordRow(),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               _isLoading
-                  ? CircularProgressIndicator(
+                  ? const CircularProgressIndicator(
                       color: AppColor.primeColor,
                     )
                   : CustomButton(
