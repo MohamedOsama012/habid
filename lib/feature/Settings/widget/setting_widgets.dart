@@ -21,7 +21,7 @@ class SettingWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.4), // Shadow color with opacity
+              color: Colors.grey.withOpacity(0.2), // Shadow color with opacity
               spreadRadius: 2, // How much the shadow spreads
               blurRadius: 1, // The blur radius of the shadow
             ),
@@ -45,7 +45,8 @@ class SettingWidget extends StatelessWidget {
                   Text(
                     tittel,
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.w500),
+                      fontSize: 22,
+                    ),
                   ),
                 ],
               ),

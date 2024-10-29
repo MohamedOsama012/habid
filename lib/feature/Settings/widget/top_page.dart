@@ -28,10 +28,18 @@ class _TopSettingPageState extends State<TopSettingPage> {
           height: 110.h,
           width: double.infinity,
           decoration: const BoxDecoration(
-              color: AppColor.primeColor,
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFF009bc5),
+                  Color(0xFF009bc5),
+                  Color(0xFF0187b4),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(50),
-                  bottomRight: Radius.circular(50))),
+                  bottomLeft: Radius.circular(0),
+                  bottomRight: Radius.circular(0))),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: Column(

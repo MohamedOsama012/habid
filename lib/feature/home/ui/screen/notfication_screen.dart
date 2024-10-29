@@ -37,12 +37,16 @@ class NotifcationScreen extends StatelessWidget {
                         return Expanded(
                           child: ListView.separated(
                             itemBuilder: (context, index) {
-                              return NotficationWidget(
-                                  notfData: state.notficationList[index]);
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                child: NotficationWidget(
+                                    notfData: state.notficationList[index]),
+                              );
                             },
                             separatorBuilder: (context, index) =>
                                 const SizedBox(
-                              height: 15,
+                              height: 10,
                             ),
                             itemCount: state.notficationList.length,
                           ),

@@ -19,7 +19,7 @@ class LogOutWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.4),
+              color: Colors.grey.withOpacity(0.2),
               spreadRadius: 2,
               blurRadius: 1,
             ),

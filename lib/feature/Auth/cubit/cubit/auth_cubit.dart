@@ -24,9 +24,10 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       var result = await authFirebaseOperation.register(emial, password);
-      if (result == "succses") {
+      if (result == "success") {
         String idUser = firebaseService.getFirebaseUserId();
         await setAuthUserData(email: emial, name: name, id: idUser);
+        log("message");
         emit(AuthRegisterSucsses());
       } else {
         emit(AuthFaileRegister(errorMassage: result));

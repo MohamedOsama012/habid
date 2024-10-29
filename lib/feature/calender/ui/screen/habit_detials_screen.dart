@@ -16,7 +16,7 @@ class HabitDetailsPage extends StatelessWidget {
       child: BlocBuilder<CalenderCubit, CalenderState>(
         builder: (context, state) {
           if (state is getHabitForSpacficDateLoadin) {
-            return Scaffold(
+            return const Scaffold(
               backgroundColor: Colors.white,
               body: Center(child: CircularProgressIndicator()),
             );
@@ -30,7 +30,7 @@ class HabitDetailsPage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 40),
                     // Top Title
-                    Text(
+                    const Text(
                       'Progress',
                       style: TextStyle(
                         fontSize: 28,
@@ -71,7 +71,7 @@ class HabitDetailsPage extends StatelessWidget {
                     const SizedBox(height: 30),
 
                     // Section: Your Goals
-                    Text(
+                    const Text(
                       'Summary Day',
                       style: TextStyle(
                         fontSize: 22,
@@ -94,13 +94,13 @@ class HabitDetailsPage extends StatelessWidget {
                                   state.dateOfHabit.allHabit.length,
                               strokeWidth: 12,
                               backgroundColor: Colors.grey[300],
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.blue),
                             ),
                           ),
                           Text(
                             '${(((state.dateOfHabit.allHabit.length - state.dateOfHabit.notDoneHabit.length) / state.dateOfHabit.allHabit.length) * 100).toInt()}%',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                             ),
@@ -114,11 +114,12 @@ class HabitDetailsPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        const Icon(Icons.check_circle,
+                            color: Colors.green, size: 20),
                         const SizedBox(width: 5),
                         Text(
                           '${state.dateOfHabit.allHabit.length - state.dateOfHabit.notDoneHabit.length} Habits goal has achieved',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.green,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -131,11 +132,11 @@ class HabitDetailsPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.cancel, color: Colors.red, size: 20),
+                        const Icon(Icons.cancel, color: Colors.red, size: 20),
                         const SizedBox(width: 5),
                         Text(
                           '${state.dateOfHabit.notDoneHabit.length} Habits goal hasn\'t achieved',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.red,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -144,7 +145,7 @@ class HabitDetailsPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Divider(
+                    const Divider(
                       color: Colors.black,
                       thickness: 1,
                     ),
@@ -164,13 +165,13 @@ class HabitDetailsPage extends StatelessWidget {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 // Show a loading indicator while the habit name is being fetched
-                                return ListTile(
+                                return const ListTile(
                                   title: Text('Loading...'), // Placeholder text
                                   trailing: CircularProgressIndicator(),
                                 );
                               } else if (snapshot.hasError) {
                                 // Show error message in case of an error
-                                return ListTile(
+                                return const ListTile(
                                   title: Text(
                                     'Delete this habit',
                                   ),
@@ -196,7 +197,7 @@ class HabitDetailsPage extends StatelessWidget {
                                 );
                               } else {
                                 // In case data is null, show a fallback message
-                                return ListTile(
+                                return const ListTile(
                                   title: Text('No habit data'),
                                 );
                               }
@@ -214,7 +215,7 @@ class HabitDetailsPage extends StatelessWidget {
               ),
             );
           } else {
-            return Scaffold(
+            return const Scaffold(
               backgroundColor: Colors.white,
               body: Center(child: CircularProgressIndicator()),
             );

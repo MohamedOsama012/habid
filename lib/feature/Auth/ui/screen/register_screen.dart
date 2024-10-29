@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   context, state.errorMassage, Icons.close, false);
             } else if (state is AuthRegisterSucsses) {
               //! if succsess get user data
+              log("llll");
               await authFirebaseOperation.getUserData();
               context.loaderOverlay.hide();
               Navigator.pushAndRemoveUntil(
@@ -95,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
-                  AppScreenUtil.hight(25),
+                  AppScreenUtil.hight(10),
                   //!name text
                   CustomText(
                     hintName: 'Name',

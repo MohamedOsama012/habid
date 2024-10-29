@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: Padding(
-          padding: EdgeInsets.only(top: 50.h, left: 20.w, right: 20.w),
+          padding: EdgeInsets.only(top: 40.h, left: 20.w, right: 20.w),
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  AppScreenUtil.hight(35),
+                  AppScreenUtil.hight(20),
                   //!emial
                   CustomText(
                     hintName: 'Email',
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  AppScreenUtil.hight(30),
+                  AppScreenUtil.hight(20),
                   //!passwword
                   PasswordField(
                     hintName: 'Password',
@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   AppScreenUtil.hight(15),
                   RememberMeForgotPasswordRow(),
-                  AppScreenUtil.hight(40),
+                  AppScreenUtil.hight(20),
                   //!button
                   CustomButton(
                     buttonName: 'Login',

@@ -38,9 +38,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   handelNotfication() {
     if (isNotificationEnabled!) {
-      if (notToDohabitList.isEmpty) {
-        NotificationService.sendNotification(
-            token!, "Congrats!", "You finsh 100% of habit for today");
+      if (notToDohabitList.isEmpty && toDohabitList.isNotEmpty) {
+        NotificationService.sendNotification(token!, "Congrats!",
+            "🎉 You finished 100% of your habit for today! 🎯 ");
       }
       // else if (getPrecentage() > .5 && notToDohabitList.isNotEmpty) {
       //   NotificationService.sendNotification(token!, "Information!",
@@ -50,7 +50,7 @@ class HomeCubit extends Cubit<HomeState> {
         NotificationService.sendNotification(
           token!,
           "Reminder!",
-          "You did not finish all your habits today. You completed ${getPrecentage() * 100}% of your habits.",
+          "😕 You did not finish all your habits today. You completed ${getPrecentage() * 100}% of your habits. Keep going! 💪 ",
         );
       }
     }

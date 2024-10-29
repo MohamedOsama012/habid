@@ -138,7 +138,12 @@ class NotificationService {
 
   static Future<void> sendNotification(
       String deviceToken, String title, String body) async {
-    final String accessToken = await getAccessToken();
+    String? accessToken;
+    try {
+      accessToken = await getAccessToken();
+    } on Exception catch (e) {
+      log(e.toString());
+    }
     String endpointFCM =
         'https://fcm.googleapis.com/v1/projects/habit-track-6d4ba/messages:send';
     final Map<String, dynamic> message = {
