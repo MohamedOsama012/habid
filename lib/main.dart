@@ -27,7 +27,7 @@ void main() async {
 
   Hive.registerAdapter(TaskAdapter());
   await Hive.openBox('taskBox');
-  await NotificationService.initFirebaseMessaging();
+  //await NotificationService.initFirebaseMessaging();
 
   runApp(const MyApp());
 }
