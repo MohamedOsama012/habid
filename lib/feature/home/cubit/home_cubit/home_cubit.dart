@@ -36,22 +36,20 @@ class HomeCubit extends Cubit<HomeState> {
     return now.isAfter(midnight);
   }
 
-  // handelNotfication() {
-  //   if (isNotificationEnabled!) {
-  //     if (notToDohabitList.isEmpty && toDohabitList.isNotEmpty) {
-  //       NotificationService.sendNotification(token!, "Congrats!",
-  //           "🎉 You finished 100% of your habit for today! 🎯 ");
-  //     }
-
-  //     else if (isDayFinished() && notToDohabitList.isNotEmpty) {
-  //       NotificationService.sendNotification(
-  //         token!,
-  //         "Reminder!",
-  //         "😕 You did not finish all your habits today. You completed ${getPrecentage() * 100}% of your habits. Keep going! 💪 ",
-  //       );
-  //     }
-  //   }
-  // }
+  handelNotfication() {
+    if (isNotificationEnabled!) {
+      if (notToDohabitList.isEmpty && toDohabitList.isNotEmpty) {
+        NotificationService.sendNotification(token!, "Congrats!",
+            "🎉 You finished 100% of your habit for today! 🎯 ");
+      } else if (isDayFinished() && notToDohabitList.isNotEmpty) {
+        NotificationService.sendNotification(
+          token!,
+          "Reminder!",
+          "😕 You did not finish all your habits today. You completed ${getPrecentage() * 100}% of your habits. Keep going! 💪 ",
+        );
+      }
+    }
+  }
 
 //todo create habit
 
@@ -80,7 +78,7 @@ class HomeCubit extends Cubit<HomeState> {
       toDohabitList.addAll(result);
       await getUncompletHabit(result);
       await getAllGoal(result);
-      // handelNotfication();
+      handelNotfication();
       emit(GetHabitSucsess(habitData: result));
     } on Exception catch (e) {
       emit(GetHabitFail(massage: e.toString()));

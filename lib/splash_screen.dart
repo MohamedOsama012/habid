@@ -10,7 +10,7 @@ class splashScreen extends StatefulWidget {
 }
 
 class _splashScreenState extends State<splashScreen> {
-  AuthOperation f = AuthOperation();
+  AuthOperation authFirebaseOperation = AuthOperation();
 
   @override
   void initState() {
@@ -21,7 +21,7 @@ class _splashScreenState extends State<splashScreen> {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        await f.getUserData();
+        await authFirebaseOperation.getUserData();
 
         Navigator.pushReplacement(
           context,

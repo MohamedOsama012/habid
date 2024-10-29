@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/style.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/create_goal_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/goal_widgets/goal_continer.dart';
 

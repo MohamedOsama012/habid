@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/add_habit_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/card_progress.dart';
 import 'package:habit_track/feature/home/ui/widget/goal_widget.dart';

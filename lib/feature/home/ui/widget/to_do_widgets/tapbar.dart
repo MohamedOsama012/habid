@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/global/global_widget/shimmer_widget.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/style.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/ui/widget/to_do_widgets/habit_continer.dart';
 
 class TabBarToDo extends StatefulWidget {

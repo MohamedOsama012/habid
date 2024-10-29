@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/data/goal_firebase_operation.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:meta/meta.dart';

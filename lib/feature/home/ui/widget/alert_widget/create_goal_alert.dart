@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/cubit/goal_cubit/cubit/goal_cubit.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/compont_widget_fort_alert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

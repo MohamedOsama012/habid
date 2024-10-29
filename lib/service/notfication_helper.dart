@@ -15,6 +15,7 @@ class NotificationService {
   static Future<void> initFirebaseMessaging() async {
     isNotificationEnabled =
         await CashNetwork.GetFromCash(key: 'isNotificationEnabled');
+    log(isNotificationEnabled.toString());
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     NotificationFirebaseOperation notficationfirebase =
         NotificationFirebaseOperation();
@@ -47,6 +48,7 @@ class NotificationService {
 
     // Get the FCM token to send notifications to this device
     token = await messaging.getToken();
+    log('FCM Token: $token');
 
     // Listen to foreground messages
     FirebaseMessaging.onMessage.listen(

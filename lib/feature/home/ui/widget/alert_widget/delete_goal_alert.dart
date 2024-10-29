@@ -5,7 +5,7 @@ import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:habit_track/main.dart';
 

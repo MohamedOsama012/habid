@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/color.dart';
-import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
+import 'package:habit_track/feature/home/cubit/home_cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/data/home_firebase_operation.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/edit_alert.dart';
