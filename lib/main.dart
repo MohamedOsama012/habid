@@ -5,17 +5,30 @@ import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/cubit/goal_cubit/cubit/goal_cubit.dart';
-import 'package:habit_track/feature/home/data/home_firebase_operation.dart';
 
-import 'package:habit_track/feature/home/ui/screen/navbar.dart';
 import 'package:habit_track/firebase_options.dart';
+import 'package:habit_track/service/cash_helper.dart';
+import 'package:habit_track/service/notfication_helper.dart';
+import 'package:habit_track/splash_screen.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+
+import 'package:habit_track/feature/timer/task.dart';
+
+import 'package:hive_flutter/adapters.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await CashNetwork.cashInitialization();
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(TaskAdapter());
+  await Hive.openBox('taskBox');
+  await NotificationService.initFirebaseMessaging();
+
   runApp(const MyApp());
 }
 
@@ -38,45 +51,18 @@ class MyApp extends StatelessWidget {
               create: (context) => GoalCubit(),
             ),
             BlocProvider<AuthCubit>(
-              create: (context) => AuthCubit(), // Add your AuthCubit logic here
+              create: (context) => AuthCubit(),
             ),
           ],
           child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: ThemeData(
               scaffoldBackgroundColor: Colors.white.withOpacity(.988),
             ),
-            home: BottomNavBar(),
-            // const RegisterScreen(),
+            home: splashScreen(),
           ),
         ),
       ),
     );
   }
 }
-/**
- *! login page
- *! forget password
- * !sure from controllar and validate
- *! do cubit
- *! do integrat with firebase
- *! show state in ui
- */
-/**
- * !ui for home
- */
-/**
- * todo shimmwer 
- *! todo empty list in home do not found  
- *
- * todo do validate in alert add or update
- * todo understand the custom period
- */
-/**
- * do goal  
- * tine code 
- * clean code     
- * do notfication   
- * do shard pref    
- * do send forget password    
- * 
- do here multy bloc provider**/

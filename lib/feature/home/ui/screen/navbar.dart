@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:habit_track/feature/Settings/screen/settting.dart';
 import 'package:habit_track/feature/calender/ui/screen/calender_screen.dart';
@@ -15,7 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     with WidgetsBindingObserver {
   int curentIndex = 0;
   final screen = [
-    HomeScreen(), // Replace with HomeScreen()
+    const HomeScreen(),
     HabitCalendar(),
     TimerGoalScreen(),
     SettingsScreen(),
@@ -23,49 +26,52 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        bottomNavigationBar: Container(
-          color: Colors.white,
-          child: BottomNavigationBar(
-            unselectedIconTheme: const IconThemeData(color: Colors.grey),
-            backgroundColor: Colors.white.withOpacity(.89),
-            type: BottomNavigationBarType.fixed,
-            items: [
-              BottomNavigationBarItem(
-                icon: _buildIconWithGradient(
-                  icon: Icons.home_outlined,
-                  isSelected: curentIndex == 0,
+    return Container(
+      color: Color(0xFF01b1d8),
+      child: SafeArea(
+        child: Scaffold(
+          bottomNavigationBar: Container(
+            color: Colors.white,
+            child: BottomNavigationBar(
+              unselectedIconTheme: const IconThemeData(color: Colors.grey),
+              backgroundColor: Colors.white.withOpacity(.89),
+              type: BottomNavigationBarType.fixed,
+              items: [
+                BottomNavigationBarItem(
+                  icon: _buildIconWithGradient(
+                    icon: Icons.home_outlined,
+                    isSelected: curentIndex == 0,
+                  ),
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIconWithGradient(
-                  icon: Icons.calendar_month_rounded,
-                  isSelected: curentIndex == 1,
+                BottomNavigationBarItem(
+                  icon: _buildIconWithGradient(
+                    icon: Icons.calendar_month_rounded,
+                    isSelected: curentIndex == 1,
+                  ),
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIconWithGradient(
-                  icon: Icons.timer,
-                  isSelected: curentIndex == 2,
+                BottomNavigationBarItem(
+                  icon: _buildIconWithGradient(
+                    icon: Icons.timer,
+                    isSelected: curentIndex == 2,
+                  ),
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: _buildIconWithGradient(
-                  icon: Icons.settings,
-                  isSelected: curentIndex == 3,
+                BottomNavigationBarItem(
+                  icon: _buildIconWithGradient(
+                    icon: Icons.settings,
+                    isSelected: curentIndex == 3,
+                  ),
+                  label: '',
                 ),
-                label: '',
-              ),
-            ],
-            currentIndex: curentIndex,
-            onTap: (value) => setState(() => curentIndex = value),
+              ],
+              currentIndex: curentIndex,
+              onTap: (value) => setState(() => curentIndex = value),
+            ),
           ),
+          body: screen[curentIndex],
         ),
-        body: screen[curentIndex],
       ),
     );
   }

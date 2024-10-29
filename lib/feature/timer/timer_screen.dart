@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:habit_track/core/theme/color.dart';
+import 'package:habit_track/feature/timer/task.dart';
 import 'dart:async';
 import 'dart:math';
+
+import 'package:hive/hive.dart';
 
 class TimerGoalScreen extends StatefulWidget {
   @override
@@ -29,6 +33,97 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
   void initState() {
     super.initState();
     _startTimer();
+    _loadTasks();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _clearHiveData();
+    super.dispose();
+  }
+
+  void _clearHiveData() async {
+    var taskBox = Hive.box('taskBox');
+    await taskBox.clear();
+  }
+
+  List<Task> _tasks = [];
+
+  void _loadTasks() async {
+    var taskBox = Hive.box('taskBox');
+
+    setState(() {
+      _tasks = taskBox.values.cast<Task>().toList();
+    });
+  }
+
+  void _resetHistory() async {
+    if (_tasks.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('No goals to delete.'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    } else {
+      bool? confirmDelete = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Deletion'),
+            content: Text(
+                'Are you sure you want to delete all goals from the history?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('Delete'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirmDelete == true) {
+        var taskBox = Hive.box('taskBox');
+        await taskBox.deleteFromDisk();
+        await Hive.openBox('taskBox');
+
+        setState(() {
+          _timeStart = 0;
+          _timeLeft = 0;
+          _isPaused = true;
+          _tasks = [];
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('All goals have been deleted.'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    }
+  }
+
+  void _saveGoalToHive(
+      String taskName, int hours, int minutes, int seconds) async {
+    String period =
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
+    var taskBox = Hive.box('taskBox');
+    Task newTask = Task(name: taskName, period: period);
+
+    await taskBox.add(newTask);
+    _loadTasks();
   }
 
   void _startTimer() {
@@ -40,16 +135,46 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
         });
       } else if (_timeLeft == 0) {
         _isTimerRunning = false;
+        _isPaused = true;
         timer.cancel();
+
+        if (_goalController.text.isNotEmpty) {
+          int hours = int.tryParse(_hoursController.text) ?? 0;
+          int minutes = int.tryParse(_minutesController.text) ?? 0;
+          int seconds = int.tryParse(_secondsController.text) ?? 0;
+
+          _saveGoalToHive(_goalController.text, hours, minutes, seconds);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Task "${_goalController.text}" added to history.'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
+
+        _goalController.clear();
+        _hoursController.clear();
+        _minutesController.clear();
+        _secondsController.clear();
       }
     });
   }
 
   void _togglePause() {
-    setState(() {
-      _isTimerRunning = !_isTimerRunning;
-      _isPaused = !_isPaused;
-    });
+    if (_goalController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter a goal before starting the timer.'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    } else {
+      setState(() {
+        _isTimerRunning = !_isTimerRunning;
+        _isPaused = !_isPaused;
+      });
+    }
   }
 
   void _validateInput() {
@@ -67,12 +192,6 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
             _minutesError = _secondsError = 'Enter at least one value';
       }
     });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 
   TextInputFormatter _timeInputFormatter({required int maxValue}) {
@@ -145,16 +264,26 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
                       child: IconButton(
                         icon: Icon(Icons.close, color: Colors.blue, size: 40),
                         onPressed: () {
-                          setState(() {
-                            _timeLeft = _timeStart;
-                            _isPaused = true;
-                          });
+                          if (_goalController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Please enter a goal before reseting the timer.'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          } else {
+                            setState(() {
+                              _timeLeft = _timeStart;
+                              _isPaused = true;
+                            });
+                          }
                         },
                       ),
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Color(0xFF008bb7),
+                        color: AppColor.primeColor,
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
@@ -189,6 +318,16 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
                         onPressed: _togglePause,
                       ),
                     ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red, size: 40),
+                        onPressed: _resetHistory,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 30),
@@ -210,9 +349,21 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        _buildHistoryItem('Pray 5 prayers', '30:05 min'),
-                        _buildHistoryItem('Wake up early', '95:35 min'),
-                        _buildHistoryItem('Wake up early', '95:35 min'),
+                        if (_tasks.isEmpty)
+                          Center(
+                            child: Text('No tasks found'),
+                          )
+                        else
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: _tasks.length,
+                            itemBuilder: (context, index) {
+                              final task = _tasks[index];
+                              return _buildHistoryItem(
+                                  task.name, task.period, index);
+                            },
+                          ),
                       ],
                     ),
                   ),
@@ -258,7 +409,7 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
               decoration: InputDecoration(
                 labelText: 'Your Goal',
                 border: OutlineInputBorder(),
-                errorText: _goalError, // Display error if validation fails
+                errorText: _goalError,
               ),
             ),
             SizedBox(height: 10),
@@ -311,12 +462,10 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  // Validate goal name
                   _goalError = _goalController.text.isEmpty
                       ? 'Goal name cannot be empty'
                       : null;
 
-                  // Continue validating time inputs
                   _validateInput();
 
                   if (_hoursError == null &&
@@ -334,19 +483,15 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
                       _timeStart = totalSeconds;
                       _timeLeft = totalSeconds;
                     });
-
-                    if (!_isTimerRunning) {
-                      _isPaused = true;
-                      _timer?.cancel();
-                      _startTimer();
-                    }
-
-                    Navigator.of(context).pop(); // Close modal
+                    _isPaused = true;
+                    _timer?.cancel();
+                    _startTimer();
+                    Navigator.of(context).pop();
                   }
                 });
               },
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero, // To remove default padding
+                padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -382,21 +527,73 @@ class _TimerGoalScreenState extends State<TimerGoalScreen> {
     );
   }
 
-  Widget _buildHistoryItem(String task, String time) {
+  void _deleteTaskFromHive(int index) async {
+    bool? confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this task?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete == true) {
+      var taskBox = Hive.box('taskBox');
+
+      await taskBox.deleteAt(index);
+
+      setState(() {
+        _tasks.removeAt(index);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Task deleted successfully.'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
+  Widget _buildHistoryItem(String task, String time, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(task, style: TextStyle(fontSize: 16)),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.green.withOpacity(0.1),
-            ),
-            child:
-                Text(time, style: TextStyle(color: Colors.green, fontSize: 14)),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.green.withOpacity(0.1),
+                ),
+                child: Text(time,
+                    style: TextStyle(color: Colors.green, fontSize: 14)),
+              ),
+              SizedBox(width: 10),
+              IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _deleteTaskFromHive(index),
+              ),
+            ],
           ),
         ],
       ),

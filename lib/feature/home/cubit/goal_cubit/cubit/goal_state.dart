@@ -14,6 +14,12 @@ final class GetHabitForGoalSucsess extends GoalState {
 
 final class GetHabitForGoaFail extends GoalState {}
 
+// final class DeleteGoalLoad extends GoalState {}
+
+// final class DeleteGoalSuccsess extends GoalState {}
+
+// final class DeleteGoalFail extends GoalState {}
+
 // final class CreatGoalLoading extends GoalState {}
 
 // final class CreatGoalSucsses extends GoalState {}

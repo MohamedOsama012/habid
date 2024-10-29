@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
 import 'package:habit_track/feature/home/cubit/goal_cubit/cubit/goal_cubit.dart';
@@ -16,13 +16,15 @@ class CreateNewGoal extends StatefulWidget {
 
 class _CreateNewGoalState extends State<CreateNewGoal> {
   TextEditingController goalNameControllar = TextEditingController();
-  String selectedHabitType = '1 week (7 Days)';
-  String? selectedHabitName; // To store the selected habit name
+  String? selectedHabitName;
   String? habitId;
+  String selectedHabitType = '';
+  int? habitDays; // Variable to store the period as an integer
+
   @override
   void initState() {
     super.initState();
-    // Fetch all habits when this widget is initialized
+    //!git all habit
     context.read<GoalCubit>().getAllHabitInSystem();
   }
 
@@ -40,7 +42,7 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //!top part
+              //! Top part
               const TopPartInAlert(
                 nameOfAlert: 'Create New Goal',
               ),
@@ -49,14 +51,14 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
               const Divider(color: Colors.black, thickness: .15),
               const SizedBox(height: 10),
 
-              //!what name habit and text
+              //! Goal name input
               TextPartInAlert(
                 habitNameController: goalNameControllar,
                 hintText: 'Goal Name',
               ),
               const SizedBox(height: 15),
 
-              //! Habit name dropdown (fetched from Firebase)
+              //! Habit name dropdown
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -68,7 +70,6 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
                   BlocBuilder<GoalCubit, GoalState>(
                     builder: (context, state) {
                       if (state is GetHabitForGoalSucsess) {
-                        // Create dropdown items based on the habit data fetched
                         return Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -110,7 +111,6 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
                       } else if (state is GetHabitForGoaFail) {
                         return const Text('Failed to load habits');
                       } else {
-                        // Show a loading spinner while data is being fetched
                         return const Center(child: CircularProgressIndicator());
                       }
                     },
@@ -119,44 +119,35 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
               ),
               const SizedBox(height: 25),
 
-              //!drop down period
+              //! Period input (user can enter custom period)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Period",
+                    "Period (Days)",
                     style: TextStyle(fontSize: 18, color: Colors.black),
                   ),
                   Container(
-                    width: 180,
+                    width: 150,
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(8)),
-                    child: DropdownButtonFormField<String>(
-                      dropdownColor: Colors.grey[200],
-                      value: selectedHabitType,
-                      style: const TextStyle(fontSize: 16, color: Colors.black),
-                      borderRadius: BorderRadius.circular(8),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedHabitType = newValue!;
-                        });
-                      },
-                      items: <String>['1 week (7 Days)', '1 Month (30 Days)']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
+                        hintText: 'Enter days',
                         border: InputBorder.none,
                       ),
-                      icon: const Icon(
-                        Icons.arrow_drop_down_outlined,
-                        size: 30,
-                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value.isNotEmpty) {
+                            habitDays = int.tryParse(value); // Convert to int
+                          } else {
+                            habitDays = null;
+                          }
+                        });
+                      },
                     ),
                   ),
                 ],
@@ -172,9 +163,8 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
                         context, "Error", Icons.close, false);
                   } else if (state is CreatGoalSucsses) {
                     Navigator.pop(context);
-
                     AppStuts.showCustomSnackBar(
-                        context, "Creat Goal successful", Icons.check, true);
+                        context, "Create Goal successful", Icons.check, true);
                   }
                 },
                 builder: (context, state) {
@@ -183,13 +173,18 @@ class _CreateNewGoalState extends State<CreateNewGoal> {
                       : CustomButton(
                           buttonName: 'Create',
                           onPressed: () {
-                            print('Habit Name: $habitId');
-                            print('Goal Period: $selectedHabitType');
-                            print('Goal Name: ${goalNameControllar.text}');
-                            context.read<HomeCubit>().creatGoal(
-                                name: goalNameControllar.text,
-                                period: selectedHabitType,
-                                habitId: habitId);
+                            if (habitDays != null && habitDays! > 0) {
+                              context.read<HomeCubit>().creatGoal(
+                                  name: goalNameControllar.text,
+                                  period: habitDays!,
+                                  habitId: habitId);
+                            } else {
+                              AppStuts.showCustomSnackBar(
+                                  context,
+                                  "Please enter a valid number of days",
+                                  Icons.close,
+                                  false);
+                            }
                           },
                         );
                 },

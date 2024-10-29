@@ -1,14 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
-import 'package:habit_track/feature/home/ui/widget/alert_widget/add_habit_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/alert_widget/create_goal_alert.dart';
 import 'package:habit_track/feature/home/ui/widget/goal_widgets/goal_continer.dart';
-import 'package:popover/popover.dart';
 
 class GoalWidget extends StatelessWidget {
   const GoalWidget({super.key});
@@ -16,7 +12,6 @@ class GoalWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var cubit = BlocProvider.of<HomeCubit>(context);
-    log("enter ti goal widget");
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 12, bottom: 18),
       child: Container(
@@ -57,13 +52,27 @@ class GoalWidget extends StatelessWidget {
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
                   return cubit.goalList.isEmpty
-                      ? Text("not goal Yet")
+                      ? Center(
+                          child: Text(
+                            "Not Found Goal Yet !!",
+                            style: TextAppStyle.subMainTittel.copyWith(
+                              fontSize: 18.sp,
+                              foreground: Paint()
+                                ..shader = const LinearGradient(
+                                  colors: [
+                                    Color(0xFF08D9D6), // #08D9D6
+                                    Color(0xFF0083B0), // #0083B0
+                                  ],
+                                ).createShader(
+                                    const Rect.fromLTWH(0, 0, 200, 70)),
+                            ),
+                          ),
+                        )
                       : ListView.builder(
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return GoalContaner(
                               dateGoal: cubit.goalList[index],
-                              habitName: cubit.toDohabitList[index].name,
                             );
                           },
                           itemCount: cubit.goalList.length,
@@ -71,12 +80,8 @@ class GoalWidget extends StatelessWidget {
                 },
               ),
               //!3
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  'show more',
-                  style: TextAppStyle.subTittel,
-                ),
+              SizedBox(
+                height: 30,
               )
             ],
           ),

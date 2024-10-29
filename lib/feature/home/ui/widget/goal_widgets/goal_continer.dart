@@ -1,32 +1,30 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
-import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
-import 'package:habit_track/feature/home/ui/screen/home_screen.dart';
-import 'package:habit_track/feature/home/ui/widget/alert_widget/delete_alert.dart';
+import 'package:habit_track/feature/home/ui/widget/alert_widget/delete_goal_alert.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class GoalContaner extends StatelessWidget {
-  const GoalContaner({super.key, required this.dateGoal});
+  GoalContaner({
+    super.key,
+    required this.dateGoal,
+  });
   final Goal dateGoal;
   void showEditHabitDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return const DeletGoal(); // Use the new dialog widget
+        return DeletGoal(
+            habitId: dateGoal.habitId!); // Use the new dialog widget
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    log("${dateGoal.currentProgress} andddd ${dateGoal.total}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(

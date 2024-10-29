@@ -17,7 +17,6 @@ class CalenderCubit extends Cubit<CalenderState> {
     try {
       HabitDialySummaryModel result =
           await firebaseOperation.getHabitForSpacficDate(date: date);
-      log(result.notDoneHabit.toString());
       emit(getHabitForSpacficDateSuccses(dateOfHabit: result));
     } on Exception catch (e) {
       emit(getHabitForSpacficDateFail(massage: e.toString()));

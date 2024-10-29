@@ -11,7 +11,7 @@ class ProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var cubit = BlocProvider.of<HomeCubit>(context);
+    var cubit = BlocProvider.of<HomeCubit>(context); //! to get card data
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         return Container(
@@ -22,9 +22,9 @@ class ProgressCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF009bc5), // Right color #009BC5
                 Color(0xFF009bc5),
-                Color(0xFF0187b4), // Left color #0187B4
+                Color(0xFF009bc5),
+                Color(0xFF0187b4),
               ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,

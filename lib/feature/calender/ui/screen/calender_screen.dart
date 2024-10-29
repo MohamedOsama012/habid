@@ -26,7 +26,6 @@ class _HabitCalendarState extends State<HabitCalendar> {
     _loadHabitData(); // Load habit data on initialization
   }
 
-  // Load habit data from the database
   Future<void> _loadHabitData() async {
     final dailyProgress =
         await f.lodaAllDateHabit(); // Fetch data from Firestore
@@ -40,32 +39,31 @@ class _HabitCalendarState extends State<HabitCalendar> {
     DateTime today = DateTime.now(); // Get current day
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${today.day}-${today.month}- ${today.year}",
-                  style: TextAppStyle.subTittel,
-                ),
-                const Text("Journaling everyday",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w600,
-                    )),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "${today.day}-${today.month}- ${today.year}",
+                style: TextAppStyle.subTittel,
+              ),
+              const Text("Journaling everyday",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w600,
+                  )),
+            ],
           ),
           Container(
             height: AppScreenUtil.getResponsiveHeight(context, .46),
             margin: const EdgeInsets.symmetric(horizontal: 16.0),
             child: CalendarCarousel<Event>(
-              todayButtonColor: Colors.transparent,
+              todayButtonColor: habitStatusMap.events[today] == null
+                  ? Colors.blue
+                  : Colors.transparent,
               markedDatesMap: habitStatusMap,
               markedDateShowIcon: true,
               markedDateIconMaxShown: 1,
@@ -138,8 +136,6 @@ class _HabitCalendarState extends State<HabitCalendar> {
       ],
     );
   }
-
-  // Helper method to create the circular decoration with the day number
 
   // Navigate to a new screen that shows habit details for the selected day
   void _navigateToHabitDetailsPage(BuildContext context, DateTime date) {

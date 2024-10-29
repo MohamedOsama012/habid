@@ -1,10 +1,15 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_track/core/theme/style.dart'; // Adjust this import as necessary
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
+import 'package:habit_track/core/theme/color.dart';
+import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
-import 'package:habit_track/feature/Settings/widget/CustomTextWithHint.dart'; // Import your new widget here
+import 'package:habit_track/feature/Auth/ui/widget/custom_text.dart';
 import 'package:habit_track/feature/Auth/ui/widget/password_field.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
+import 'package:habit_track/service/const_varible.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -18,24 +23,26 @@ class _AccountPageState extends State<AccountPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+
     super.dispose();
   }
 
   void _onUpdate() {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthCubit>().updateAccount(
-        name: _nameController.text.isNotEmpty ? _nameController.text : "", // Optional field
-        email: _emailController.text.isNotEmpty ? _emailController.text : "", // Optional field
-        password: _passwordController.text, // Required field
-      );
+      String? nameControllar =
+          _nameController.text.isEmpty ? userName : _nameController.text;
+      String? emailController =
+          _emailController.text.isEmpty ? userEmial : _emailController.text;
+
+      context.read<AuthCubit>().verficationEmailFun(
+          newEmail: emailController!,
+          name: nameControllar!,
+          password: _passwordController.text);
     }
   }
 
@@ -43,22 +50,37 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account'),
+        title: const Text('Update Account'),
+        backgroundColor: AppColor.backgroundColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new), // The back icon
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0),
         child: BlocListener<AuthCubit, AuthState>(
           listener: (context, state) {
-            if (state is AuthFaileRegister) {
-              // Handle failure
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMassage)),
+            if (state is UserVerificatiSuccses) {
+              context.loaderOverlay.hide();
+              AppStuts.showAwesomeSnackBar(
+                context,
+                ContentType.help,
+                "check account",
               );
-            } else if (state is AuthRegisterSucsses) {
-              // Handle success, you can show a message or navigate
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Account updated successfully!")),
-              );
+            }
+            if (state is UpdateUserDataFail) {
+              context.loaderOverlay.hide();
+              AppStuts.showCustomSnackBar(
+                  context, state.errorMessage, Icons.close, false);
+            } else if (state is UpdateUserDataSuccsess) {
+              context.loaderOverlay.hide();
+              AppStuts.showCustomSnackBar(
+                  context, "Update Succsufly", Icons.check, true);
+              setState(() {});
+              Navigator.pop(context);
             }
           },
           child: SingleChildScrollView(
@@ -66,60 +88,64 @@ class _AccountPageState extends State<AccountPage> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Name Field (Optional)
-                  CustomTextWithHint(
-                    hintNameInside: 'Gasser',
-                    hintName: 'Name',
+                  CustomText(
+                    hintName: "Name",
+                    hintText: userName,
                     controller: _nameController,
                     validator: (value) {
-                      // No validation since it's optional
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 10.0),
-                  // Email Field (Optional)
-                  CustomTextWithHint(
-                    hintNameInside: 'gasser@gmail.com',
-                    hintName: 'Email',
-                    controller: _emailController,
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty && !RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email';
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 10.0),
-                  // Password Field (Required)
+                  AppScreenUtil.hight(15),
+                  CustomText(
+                    hintName: "Email",
+                    hintText: userEmial,
+                    controller: _emailController,
+                    validator: (value) {
+                      // Define a regular expression for validating email
+                      String pattern =
+                          r'^[a-zA-Z0-9.a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+                      RegExp regex = RegExp(pattern);
+
+                      // Allow empty value
+
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+
+                      // Check if the email is valid
+                      if (!regex.hasMatch(value)) {
+                        return 'Please enter a valid email';
+                      }
+
+                      return null;
+                    },
+                  ),
+                  AppScreenUtil.hight(10),
                   PasswordField(
                     hintName: 'Password',
                     controller: _passwordController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
+                        return 'Please enter your password';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 10.0),
-                  // Confirm Password Field (Required)
-                  PasswordField(
-                    hintName: 'Confirm Password',
-                    controller: _confirmPasswordController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      } else if (value != _passwordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
+                  AppScreenUtil.hight(25),
+                  BlocConsumer<AuthCubit, AuthState>(
+                    listener: (context, state) {},
+                    builder: (context, state) {
+                      return CustomButton(
+                        buttonName: state is UserVerificatiSuccses
+                            ? 'Update'
+                            : 'verfication Emial',
+                        onPressed: _onUpdate,
+                      );
                     },
-                  ),
-                  SizedBox(height: 20.0),
-                  // Update Button
-                  CustomButton(
-                    buttonName: 'Update',
-                    onPressed: _onUpdate,
                   ),
                 ],
               ),

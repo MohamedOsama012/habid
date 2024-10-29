@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -8,10 +5,10 @@ import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/feature/calender/data/model/dialy_habit_summary_model.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
 import 'package:habit_track/service/firebase_service.dart';
-import 'package:intl/intl.dart';
 
 class FirebaseOperationCalender {
   FirebaseService firebaseService = FirebaseService();
+
   Future<Map<DateTime, List<Event>>> lodaAllDateHabit() async {
     String userId = firebaseService.getFirebaseUserId();
     Map<DateTime, List<Event>> events = {};
@@ -22,21 +19,18 @@ class FirebaseOperationCalender {
         .collection('dailySummary')
         .get();
 
-    // Loop through each document (representing a date)
     for (var habitDoc in habitByDateSnapshot.docs) {
       String docId = habitDoc.id; // The document ID represents the date
-      DateTime date = DateTime.parse(docId); // Convert docId to DateTime
-
+      DateTime date = DateTime.parse(docId); //convert to date
+//for parse
       HabitDialySummaryModel data = HabitDialySummaryModel.fromMap(
           habitDoc.data() as Map<String, dynamic>);
 
-      List<String> notDoneHabit =
-          data.notDoneHabit; // Incomplete habits for this date
+      List<String> notDoneHabit = data.notDoneHabit; // Incomplete habits list
 
-      // Check if all habits are completed (no habit in the notDone list)
+      // Check if all habits are
       bool isCompleted = notDoneHabit.isEmpty;
-
-      // Define the icon based on habit completion status
+// notdone habit empty will be green
       if (isCompleted) {
         events[date] = [
           Event(

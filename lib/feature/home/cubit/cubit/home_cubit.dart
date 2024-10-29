@@ -5,19 +5,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:habit_track/feature/home/data/goal_firebase_operation.dart';
 import 'package:habit_track/feature/home/data/home_firebase_operation.dart';
 import 'package:habit_track/feature/home/data/model/habit_model.dart';
+import 'package:habit_track/service/const_varible.dart';
+import 'package:habit_track/service/notfication_helper.dart';
 import 'package:meta/meta.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
-  FirebaseHomeOperation firebaseOperation = FirebaseHomeOperation();
-  GoalFirebaseOperation f = GoalFirebaseOperation();
+  FirebaseHomeOperation firebaseHomeOperation = FirebaseHomeOperation();
+  GoalFirebaseOperation firebaseGoalOperation = GoalFirebaseOperation();
 
   List<HabitModel> notToDohabitList = [];
   List<HabitModel> toDohabitList = [];
   List<Goal> goalList = [];
-
   double getPrecentage() {
     if (toDohabitList.isEmpty) {
       return 0;
@@ -28,13 +29,39 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  bool isDayFinished() {
+    DateTime now = DateTime.now();
+    DateTime midnight = DateTime(
+        now.year, now.month, now.day, 23, 59, 59); // End of the day (midnight)
+    return now.isAfter(midnight);
+  }
+
+  // handelNotfication() {
+  //   if (isNotificationEnabled!) {
+  //     if (notToDohabitList.isEmpty && toDohabitList.isNotEmpty) {
+  //       NotificationService.sendNotification(token!, "Congrats!",
+  //           "🎉 You finished 100% of your habit for today! 🎯 ");
+  //     }
+
+  //     else if (isDayFinished() && notToDohabitList.isNotEmpty) {
+  //       NotificationService.sendNotification(
+  //         token!,
+  //         "Reminder!",
+  //         "😕 You did not finish all your habits today. You completed ${getPrecentage() * 100}% of your habits. Keep going! 💪 ",
+  //       );
+  //     }
+  //   }
+  // }
+
+//todo create habit
+
   creatHabit({
     required String name,
     required String period,
     required List<String> customDays,
   }) async {
     emit(CreateHabitLoodin());
-    bool result = await firebaseOperation.createHabit(
+    bool result = await firebaseHomeOperation.createHabit(
         habitName: name, period: period, customDays: customDays);
     if (result) {
       emit(creatHabiSuccses());
@@ -49,12 +76,11 @@ class HomeCubit extends Cubit<HomeState> {
     notToDohabitList.clear();
 
     try {
-      List<HabitModel> result = await firebaseOperation.getAllHabits();
+      List<HabitModel> result = await firebaseHomeOperation.getAllHabits();
       toDohabitList.addAll(result);
-      await getnotDoneHabit(result);
+      await getUncompletHabit(result);
       await getAllGoal(result);
-      log("Updated goalList: ${goalList.length}");
-      log("name ${goalList[1].name}");
+      // handelNotfication();
       emit(GetHabitSucsess(habitData: result));
     } on Exception catch (e) {
       emit(GetHabitFail(massage: e.toString()));
@@ -63,12 +89,12 @@ class HomeCubit extends Cubit<HomeState> {
 
   creatGoal({
     required String name,
-    required String period,
+    required int period,
     required habitId,
   }) async {
     emit(CreatGoalLoading());
-    bool result =
-        await f.creeateGoal(goalName: name, period: period, habitId: habitId);
+    bool result = await firebaseGoalOperation.creeateGoal(
+        goalName: name, period: period, habitId: habitId);
     if (result) {
       emit(CreatGoalSucsses());
       await getAllHabit();
@@ -77,20 +103,29 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  deleteGoal({required String habitId}) async {
+    emit(DeleteGoalLoad());
+    bool result = await firebaseGoalOperation.deleteGoal(habitId: habitId);
+    if (result) {
+      emit(DeleteGoalSuccsess());
+      await getAllHabit();
+    } else {
+      emit(DeleteGoalFail());
+    }
+  }
+
   getAllGoal(List<HabitModel> result) {
     goalList.clear();
 
     for (int i = 0; i < result.length; i++) {
       if (result[i].goal != null) {
+        //if (result[i].goal!.total! + 1 != result[i].goal!.currentProgress)
         goalList.add(result[i].goal!);
       }
     }
-
-    log("eeeeee");
-    log(goalList.length.toString());
   }
 
-  getnotDoneHabit(List<HabitModel> result) async {
+  getUncompletHabit(List<HabitModel> result) async {
     try {
       for (int i = 0; i < result.length; i++) {
         if (result[i].progress!.isNotEmpty) {
@@ -99,8 +134,6 @@ class HomeCubit extends Cubit<HomeState> {
           }
         }
       }
-      log("rrrrrrrrrrrrrrrrr");
-      log(notToDohabitList.length.toString());
     } on Exception catch (e) {
       emit(GetHabitFail(massage: e.toString()));
     }
@@ -108,7 +141,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   updateDoneHabit({required String habitId, required bool isComplet}) async {
     emit(DoneHabitLooding());
-    bool result = await firebaseOperation.markHabit(
+    bool result = await firebaseHomeOperation.markHabit(
         habitId: habitId, isComplet: isComplet);
     if (result) {
       emit(DoneHabitSuscsses());
@@ -121,7 +154,7 @@ class HomeCubit extends Cubit<HomeState> {
   deletHabit({required String habitId}) async {
     emit(DeleteHabitLooding());
     log(habitId);
-    bool result = await firebaseOperation.deletHabit(habitId: habitId);
+    bool result = await firebaseHomeOperation.deletHabit(habitId: habitId);
     if (result) {
       emit(DeleteHabitSuscsses(massage: 'Delete'));
       await getAllHabit();
@@ -130,14 +163,13 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  updateHabit(
+  updateHabitData(
       {required String habitId,
       required String habitName,
       required String period,
       required List<String> customDays}) async {
     emit(UpdateHabitLooding());
-    log(habitId);
-    bool result = await firebaseOperation.updateHabitDate(
+    bool result = await firebaseHomeOperation.updateHabitDate(
         habitId: habitId,
         habitName: habitName,
         period: period,
@@ -152,7 +184,6 @@ class HomeCubit extends Cubit<HomeState> {
 
   @override
   void onChange(Change<HomeState> change) {
-    log(change.toString());
     super.onChange(change);
   }
 }

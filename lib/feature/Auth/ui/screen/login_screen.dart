@@ -1,11 +1,12 @@
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:habit_track/core/theme/style.dart';
 import 'package:habit_track/feature/Auth/cubit/cubit/auth_cubit.dart';
+import 'package:habit_track/feature/Auth/data/auth_operation.dart';
 import 'package:habit_track/feature/Auth/ui/screen/register_screen.dart';
 
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
@@ -13,7 +14,6 @@ import 'package:habit_track/feature/Auth/ui/widget/custom_text.dart';
 import 'package:habit_track/feature/Auth/ui/widget/googal_button.dart';
 import 'package:habit_track/feature/Auth/ui/widget/password_field.dart';
 import 'package:habit_track/feature/Auth/ui/widget/remmber_me.dart';
-import 'package:habit_track/feature/home/ui/screen/home_screen.dart';
 import 'package:habit_track/feature/home/ui/screen/navbar.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  AuthOperation authFirebaseOperation = AuthOperation();
 
   @override
   void dispose() {
@@ -40,10 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      String email = _emailController.text;
-      String password = _passwordController.text;
-      print("Email: $email");
-      print("Password: $password");
       context.read<AuthCubit>().logIN(
           emial: _emailController.text, password: _passwordController.text);
     }
@@ -53,16 +50,20 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<AuthCubit, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is AuthFaileLogin) {
             context.loaderOverlay.hide();
             AppStuts.showCustomSnackBar(
                 context, state.errorMassage, Icons.close, false);
           } else if (state is AuthLogInSucsses) {
+            //!get user data
+            await authFirebaseOperation.getUserData();
+
             context.loaderOverlay.hide();
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const BottomNavBar()),
+              (Route<dynamic> route) => false,
             );
           } else {
             context.loaderOverlay.show(
@@ -73,10 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: Padding(
-          padding: EdgeInsets.only(top: 50.h, left: 20.w, right: 20.w),
+          padding: EdgeInsets.only(top: 40.h, left: 20.w, right: 20.w),
           child: SingleChildScrollView(
             child: Form(
-              key: _formKey, // Add Form widget
+              key: _formKey,
               child: Column(
                 children: [
                   Row(
@@ -86,36 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Log In",
                         style: TextAppStyle.mainTittel,
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterScreen(),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 30.h),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Sign Up",
-                                style: TextAppStyle.subTittel,
-                              ),
-                              AppScreenUtil.width(6),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                color: AppColor.subText,
-                                size: 18,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-
                     ],
                   ),
-                  AppScreenUtil.hight(35),
+                  AppScreenUtil.hight(20),
                   //!emial
                   CustomText(
                     hintName: 'Email',
@@ -127,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  AppScreenUtil.hight(30),
+                  AppScreenUtil.hight(20),
                   //!passwword
                   PasswordField(
                     hintName: 'Password',
@@ -141,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   AppScreenUtil.hight(15),
                   RememberMeForgotPasswordRow(),
-                  AppScreenUtil.hight(40),
+                  AppScreenUtil.hight(20),
                   //!button
                   CustomButton(
                     buttonName: 'Login',
@@ -154,7 +128,42 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   AppScreenUtil.hight(15),
                   //!button
-                  GoogalButton()
+                  GoogalButton(
+                    onTap: () {
+                      handleGoogleSignIn();
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 30.h),
+                    child: Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // Center the text
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            text: "Don't have an account ? ",
+                            style: TextAppStyle
+                                .subTittel, // Style for the normal text
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Sign up',
+                                style: TextAppStyle.subTittel.copyWith(
+                                  color: AppColor.primeColor,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 18,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.of(context).pop();
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -162,5 +171,29 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> handleGoogleSignIn() async {
+    try {
+      final userCredential = await AuthOperation().signInwithGoogle();
+      if (userCredential != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Google Sign-In was cancelled.'),
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Google Sign-In failed: $e'),
+        ),
+      );
+    }
   }
 }

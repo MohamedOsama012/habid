@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_track/core/global/global_widget/app_stuts.dart';
+import 'package:habit_track/core/global/global_widget/app_snackbar.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/feature/Auth/ui/widget/custom_button.dart';
 import 'package:habit_track/feature/home/cubit/cubit/home_cubit.dart';
@@ -27,10 +27,7 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
   void initState() {
     super.initState();
 
-    // Pre-fill with the existing habit name
     habitNameController.text = widget.habitDate.name;
-
-    // Set initial habit type based on the habitDate
     if (widget.habitDate.period == 'Custom') {
       selectedHabitType = 'Custom';
       customDays = widget.habitDate.customDays ?? [];
@@ -111,7 +108,7 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
               const SizedBox(height: 15),
               //!custom weekly
               if (selectedHabitType == 'Custom')
-                CustomHabitType(
+                CustomHabitDay(
                   initialSelectedDays:
                       customDays, // Pass initial custom days here
                   onDaysSelected: (selectedDays) {
@@ -124,7 +121,10 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
                   return state is UpdateHabitLooding
-                      ? Center(child: CircularProgressIndicator())
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                          color: AppColor.primeColor,
+                        ))
                       : CustomButton(
                           buttonName: 'Update',
                           onPressed: () {
@@ -132,16 +132,15 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
                             if (selectedHabitType == 'Custom' &&
                                 customDays.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                // ignore: prefer_const_constructors
-                                SnackBar(
-                                  content: const Text(
+                                const SnackBar(
+                                  content: Text(
                                       "Please select at least one custom day"),
                                   backgroundColor: Colors.red,
                                 ),
                               );
                               return; // Prevent further execution if validation fails
                             }
-                            context.read<HomeCubit>().updateHabit(
+                            context.read<HomeCubit>().updateHabitData(
                                   habitId: widget.habitDate.habitId,
                                   habitName: habitNameController.text.isEmpty
                                       ? widget.habitDate.name
@@ -205,107 +204,6 @@ class _EditHabitDialogState extends State<EditHabitDialog> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class CustomHabitType extends StatefulWidget {
-  final Function(List<String>) onDaysSelected;
-  final List<String> initialSelectedDays;
-
-  CustomHabitType({
-    super.key,
-    required this.onDaysSelected,
-    required this.initialSelectedDays,
-  });
-
-  @override
-  State<CustomHabitType> createState() => _CustomHabitTypeState();
-}
-
-class _CustomHabitTypeState extends State<CustomHabitType> {
-  final List<bool> selectedWeekdays = List.filled(7, false);
-  final List<String> weekdays = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday'
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Initialize selectedWeekdays based on initialSelectedDays
-    for (int i = 0; i < weekdays.length; i++) {
-      if (widget.initialSelectedDays.contains(weekdays[i])) {
-        selectedWeekdays[i] = true;
-      }
-    }
-  }
-
-  void _notifyDaysSelected() {
-    List<String> selectedDays = [];
-    for (int i = 0; i < selectedWeekdays.length; i++) {
-      if (selectedWeekdays[i]) {
-        selectedDays.add(weekdays[i]);
-      }
-    }
-    widget.onDaysSelected(selectedDays);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(weekdays.length, (index) {
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedWeekdays[index] = !selectedWeekdays[index];
-            });
-            _notifyDaysSelected();
-          },
-          child: Column(
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  gradient: selectedWeekdays[index]
-                      ? const LinearGradient(
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
-                          colors: [
-                            AppColor.checkBoxDoneHabitColor,
-                            AppColor.secondCheckBoxDoneHabitColor,
-                          ],
-                        )
-                      : null,
-                  border: selectedWeekdays[index]
-                      ? null
-                      : Border.all(
-                          color: Colors.black,
-                          width: 2,
-                        ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: selectedWeekdays[index]
-                    ? const Icon(Icons.check, color: Colors.white)
-                    : const SizedBox.shrink(),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                weekdays[index].substring(0, 3),
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
-          ),
-        );
-      }),
     );
   }
 }

@@ -10,30 +10,11 @@ class RememberMeForgotPasswordRow extends StatefulWidget {
 
 class _RememberMeForgotPasswordRowState
     extends State<RememberMeForgotPasswordRow> {
-  bool _isRememberMeChecked = false;
-
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-          MainAxisAlignment.spaceBetween, // Spaces out the widgets
+      mainAxisAlignment: MainAxisAlignment.end, // Spaces out the widgets
       children: [
-        Row(
-          children: [
-            Checkbox(
-                value: _isRememberMeChecked,
-                onChanged: (value) {
-                  setState(() {
-                    _isRememberMeChecked = value!;
-                  });
-                },
-                activeColor: Colors.lightBlue),
-            Text(
-              "Remember Me",
-              style: TextAppStyle.subTittel,
-            ),
-          ],
-        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).push(

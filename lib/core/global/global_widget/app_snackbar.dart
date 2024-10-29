@@ -31,7 +31,7 @@ class AppStuts {
     );
   }
 
-  void showAwesomeSnackBar(
+  static void showAwesomeSnackBar(
       BuildContext context, ContentType contentType, String message) {
     // Create the snack bar using AwesomeSnackbarContent
     final snackBar = SnackBar(

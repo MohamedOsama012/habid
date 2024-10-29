@@ -26,13 +26,14 @@ class Goal {
   String? name;
   int? total;
   int? currentProgress;
-
-  Goal({this.name, this.total, this.currentProgress});
+  String? habitId;
+  Goal({this.name, this.total, this.currentProgress, this.habitId});
 
   Goal.fromJson(Map<String, dynamic> json) {
     name = json['goal_name'];
     total = json['total_day'];
     currentProgress = json['done_day'];
+    habitId = json['habit_id'];
   }
 
   Map<String, dynamic> toJson() {
