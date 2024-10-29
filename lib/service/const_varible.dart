@@ -1,4 +1,4 @@
 String? userName;
 String? userEmial;
-String? token;
+//String? token;
 bool? isNotificationEnabled;
