@@ -46,7 +46,7 @@ class _TopSettingPageState extends State<TopSettingPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  userName!,
+                  userName ?? "null",
                   style: TextAppStyle.subMainTittel.copyWith(
                       fontSize: 34.sp,
                       fontWeight: FontWeight.bold,
@@ -54,7 +54,7 @@ class _TopSettingPageState extends State<TopSettingPage> {
                 ),
                 AppScreenUtil.hight(4),
                 Text(
-                  userEmial!,
+                  userEmial ?? "jgrkg",
                   style: TextAppStyle.subTittel
                       .copyWith(fontSize: 18, color: Colors.black),
                 )

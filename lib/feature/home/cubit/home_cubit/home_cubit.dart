@@ -18,6 +18,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   List<HabitModel> notToDohabitList = [];
   List<HabitModel> toDohabitList = [];
+
   List<Goal> goalList = [];
   double getPrecentage() {
     if (toDohabitList.isEmpty) {
@@ -70,16 +71,19 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   getAllHabit() async {
-    toDohabitList.clear();
-    notToDohabitList.clear();
-
     try {
       List<HabitModel> result = await firebaseHomeOperation.getAllHabits();
-      toDohabitList.addAll(result);
+      toDohabitList = result;
       await getUncompletHabit(result);
       await getAllGoal(result);
-      handelNotfication();
-      emit(GetHabitSucsess(habitData: result));
+      // handelNotfication();
+      log("all habit list");
+      for (var element in toDohabitList) {
+        log(element.name);
+        log(element.progress![0].completed.toString());
+      }
+      log(toDohabitList.length.toString());
+      emit(GetHabitSucsess());
     } on Exception catch (e) {
       emit(GetHabitFail(massage: e.toString()));
     }
@@ -124,25 +128,40 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   getUncompletHabit(List<HabitModel> result) async {
+    log("enter to uncomplete");
+    log("${result.length.toString()} result when enter fun uncomplete");
+
+    List<HabitModel> not = [];
+
     try {
       for (int i = 0; i < result.length; i++) {
         if (result[i].progress!.isNotEmpty) {
+          log("================");
+          log(result[i].name);
+          log(result[i].progress![0].completed.toString());
+          log("================");
+
           if (!result[i].progress![0].completed) {
-            notToDohabitList.add(result[i]);
+            not.add(result[i]);
           }
         }
       }
+      notToDohabitList = not;
+      log(notToDohabitList.length.toString());
     } on Exception catch (e) {
       emit(GetHabitFail(massage: e.toString()));
     }
   }
 
-  updateDoneHabit({required String habitId, required bool isComplet}) async {
+  updateDoneHabit(
+      {required String habitId,
+      required bool isComplet,
+      required int index}) async {
     emit(DoneHabitLooding());
     bool result = await firebaseHomeOperation.markHabit(
         habitId: habitId, isComplet: isComplet);
     if (result) {
-      emit(DoneHabitSuscsses());
+      emit(DoneHabitSuscsses(index: index));
       await getAllHabit();
     } else {
       emit(DoneHabitFail());
@@ -182,6 +201,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   @override
   void onChange(Change<HomeState> change) {
+    log(change.toString());
     super.onChange(change);
   }
 }

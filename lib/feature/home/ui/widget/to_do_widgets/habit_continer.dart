@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,9 +10,10 @@ import 'package:habit_track/feature/home/ui/widget/to_do_widgets/check_box.dart'
 import 'package:habit_track/main.dart';
 
 class HabitContiner extends StatefulWidget {
-  const HabitContiner({super.key, required this.habitDate});
+  const HabitContiner(
+      {super.key, required this.habitDate, required this.index});
   final HabitModel habitDate;
-
+  final int index;
   @override
   State<HabitContiner> createState() => _HabitContinerState();
 }
@@ -25,6 +24,7 @@ class _HabitContinerState extends State<HabitContiner> {
 
   @override
   //! to check if habit is completed
+  //! initState is called only when the state is first inserted in the widget tree. Later on, it's the
   void initState() {
     if (widget.habitDate.progress!.isNotEmpty) {
       isChecked = widget.habitDate.progress![0].completed;
@@ -32,6 +32,20 @@ class _HabitContinerState extends State<HabitContiner> {
       isChecked = false;
     }
     super.initState();
+  }
+
+//! didUpdateWidget which handles the subsequent calls.
+  @override
+  void didUpdateWidget(covariant HabitContiner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update isChecked if the habitDate changes in the parent
+    if (oldWidget.habitDate != widget.habitDate) {
+      setState(() {
+        isChecked = widget.habitDate.progress?.isNotEmpty == true
+            ? widget.habitDate.progress![0].completed
+            : false;
+      });
+    }
   }
 
   void showEditHabitDialog(BuildContext context) {
@@ -87,6 +101,7 @@ class _HabitContinerState extends State<HabitContiner> {
                           });
                           context.read<HomeCubit>().updateDoneHabit(
                               habitId: widget.habitDate.habitId,
+                              index: widget.index,
                               isComplet: value);
                         },
                       ),

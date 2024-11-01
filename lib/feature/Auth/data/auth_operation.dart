@@ -24,7 +24,7 @@ class AuthOperation {
       case 'too-many-requests':
         return Future.value('Too many requests. Please try again later.');
       case 'invalid-credential':
-        return Future.value('Invalid credentials.');
+        return Future.value(' Password or emial incorrect');
       case 'operation-not-allowed':
         return Future.value('Operation not allowed.');
       case 'network-request-failed':

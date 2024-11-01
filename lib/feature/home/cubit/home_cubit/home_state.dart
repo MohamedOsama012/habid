@@ -13,10 +13,7 @@ final class CreatHabiFail extends HomeState {}
 
 final class GetHabitLoading extends HomeState {}
 
-final class GetHabitSucsess extends HomeState {
-  List<HabitModel> habitData;
-  GetHabitSucsess({required this.habitData});
-}
+final class GetHabitSucsess extends HomeState {}
 
 final class GetNotToDoHabitSucsess extends HomeState {
   List<HabitModel> habitData;
@@ -30,7 +27,10 @@ final class GetHabitFail extends HomeState {
 
 final class DoneHabitLooding extends HomeState {}
 
-final class DoneHabitSuscsses extends HomeState {}
+final class DoneHabitSuscsses extends HomeState {
+  int index;
+  DoneHabitSuscsses({required this.index});
+}
 
 final class DoneHabitFail extends HomeState {}
 
