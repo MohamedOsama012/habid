@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:habit_track/feature/Auth/data/auth_operation.dart';
-import 'package:habit_track/feature/Auth/ui/screen/register_screen.dart';
-import 'package:habit_track/feature/home/ui/screen/navbar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:habit_track/feature/Auth/presentation/cubit/cubit/auth_cubit.dart';
+import 'package:habit_track/feature/Auth/presentation/ui/screen/register_screen.dart';
+import 'package:habit_track/feature/home/presentation/ui/views/navbar.dart';
+import 'package:habit_track/routes/routes_name.dart';
 
 class splashScreen extends StatefulWidget {
   @override
@@ -10,28 +13,19 @@ class splashScreen extends StatefulWidget {
 }
 
 class _splashScreenState extends State<splashScreen> {
-  AuthOperation authFirebaseOperation = AuthOperation();
-
   @override
   void initState() {
     super.initState();
 
-    // Start the splash logic with a delay
     Future.delayed(const Duration(seconds: 3), () async {
       final user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        await authFirebaseOperation.getUserData();
+        await BlocProvider.of<UserCubit>(context).getUserData();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
-        );
+        context.pushReplacement(Routes.homeScreen);
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const RegisterScreen()),
-        );
+        context.pushReplacement(Routes.registerScreen);
       }
     });
   }
@@ -51,9 +45,6 @@ class _splashScreenState extends State<splashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 140),
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
               ],
             ),
           ),

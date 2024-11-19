@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:habit_track/core/theme/color.dart';
 import 'package:habit_track/core/theme/screen_size.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class AppStuts {
   static void showCustomSnackBar(
-      BuildContext context, String message, IconData icon, bool isSuccess) {
+      BuildContext context, String message, IconData icon) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -24,8 +25,7 @@ class AppStuts {
             )
           ],
         ),
-        backgroundColor:
-            isSuccess ? Color.fromARGB(255, 20, 146, 51) : Colors.black,
+        backgroundColor: Colors.black,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -79,6 +79,18 @@ class AppStuts {
           ),
         ),
       ),
+    );
+  }
+
+  static void showToats(String massage, Color color) {
+    Fluttertoast.showToast(
+      msg: massage,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: color,
+      textColor: Colors.white,
+      fontSize: 18,
     );
   }
 }

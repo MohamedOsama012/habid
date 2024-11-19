@@ -23,4 +23,10 @@ class FirebaseService {
     final user = FirebaseAuth.instance.currentUser;
     return user!.uid;
   }
+
+  DocumentReference getUserDoc() {
+    return FirebaseFirestore.instance
+        .collection('user_info')
+        .doc(getFirebaseUserId());
+  }
 }
